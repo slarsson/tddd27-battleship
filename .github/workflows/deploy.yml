@@ -11,6 +11,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+
+      - name: Pull from Docker Hub and restart container
+        env: 
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.HOST }}
+      - run: |
+          echo "$SSH_PRIVATE_KEY" > mykey
+          chmod 600 mykey
+          ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST whoami
       
     #   - name: Build container and push to Docker Hub
     #     env:
@@ -43,11 +52,4 @@ jobs:
     #         docker-compose pull   
     #         docker-compose up -d
 
-      - name: Pull from Docker Hub and restart container
-        env: 
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            SSH_HOST: ${{ secrets.HOST }}
-      - run: |
-          echo "$SSH_PRIVATE_KEY" > mykey
-          chmod 600 mykey
-          ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST whoami
+      
