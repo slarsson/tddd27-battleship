@@ -12,44 +12,33 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
+      - name: Build container and push to Docker Hub
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        run: | 
+          docker build -t slarsson/node-test ./test
+          echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+          docker push slarsson/node-test:latest
+
       - name: Pull from Docker Hub and restart container
-        env: 
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ secrets.HOST }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > mykey
-          chmod 600 mykey
-          ssh -i mykey -o StrictHostKeyChecking=no root@178.62.25.235 whoami
-      
-    #   - name: Build container and push to Docker Hub
-    #     env:
-    #       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-    #       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-    #     run: | 
-    #       docker build -t slarsson/node-test ./test
-    #       echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-    #       docker push slarsson/node-test:latest
-
-    #   - name: Pull from Docker Hub and restart container
-    #     uses: appleboy/ssh-action@master
-    #     env:
-    #       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-    #       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-    #       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-    #     with:
-    #       host: ${{ secrets.HOST }}
-    #       username: root
-    #       key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #       port: 22
-    #       envs: DOCKER_HUB_USERNAME, DOCKER_HUB_ACCESS_TOKEN, GITHUB_TOKEN
-    #       script_stop: true
-    #       script: |
-    #         rm -rf ./TDDD27
-    #         git clone https://slarsson:$GITHUB_TOKEN@github.com/slarsson/TDDD27.git 
-    #         cd ./TDDD27/setup
-    #         docker-compose stop
-    #         docker-compose rm -f
-    #         docker-compose pull   
-    #         docker-compose up -d
-
-      
+        uses: appleboy/ssh-action@master
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          envs: DOCKER_HUB_USERNAME, DOCKER_HUB_ACCESS_TOKEN, GITHUB_TOKEN
+          script_stop: true
+          script: |
+            rm -rf ./TDDD27
+            git clone https://slarsson:$GITHUB_TOKEN@github.com/slarsson/TDDD27.git 
+            cd ./TDDD27/setup
+            docker-compose stop
+            docker-compose rm -f
+            docker-compose pull   
+            docker-compose up -d
