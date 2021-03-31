@@ -19,5 +19,5 @@ jobs:
         run: |
             git config --global user.name 'Samuel Larsson'
             git config --global user.email 'samlarsson94@gmail.com'
-            git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/my-test.git
+            git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/tddd27.git
             git push mirror ${GITHUB_REF##*/}
