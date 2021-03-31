@@ -29,12 +29,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > mykey
           chmod 600 mykey
           rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./deploy/ root@$SSH_HOST:/root/deploy/ --delete
-          ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST \
-            cd /root/deploy \
-            docker-compose stop && \ 
-            docker-compose rm -f && \
-            docker-compose pull && \
-            docker-compose up -d
+          ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST cd /root/deploy && docker-compose stop && docker-compose rm -f && docker-compose pull && docker-compose up -d
 
 
     #   - name: Deploy containers
