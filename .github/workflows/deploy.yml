@@ -36,8 +36,10 @@ jobs:
           script_stop: true
           script: |
             rm -rf ./TDDD27
-            git clone https://slarsson:$GITHUB_TOKEN@github.com/slarsson/TDDD27.git 
-            cd ./TDDD27/setup
+            git clone https://slarsson:$GITHUB_TOKEN@github.com/slarsson/TDDD27.git
+            cd ./TDDD27
+            git checkout terraform
+            cd ./setup
             docker-compose stop
             docker-compose rm -f
             docker-compose pull   
