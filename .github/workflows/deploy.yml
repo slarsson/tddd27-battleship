@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > mykey
           chmod 600 mykey
-          ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST whoami
+          ssh -i mykey -o StrictHostKeyChecking=no root@178.62.25.235 whoami
       
     #   - name: Build container and push to Docker Hub
     #     env:
