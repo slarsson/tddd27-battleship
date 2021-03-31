@@ -17,7 +17,7 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: | 
-          docker build -t slarsson/node-test ./test
+          docker build -t slarsson/node-test ./_test
           echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
           docker push slarsson/node-test:latest
     
