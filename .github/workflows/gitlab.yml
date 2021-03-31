@@ -1,6 +1,4 @@
-# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository
-
-name: Forward commits to gitlab.liu.se
+name: Mirror to gitlab.liu.se
 
 on: push
 
@@ -12,7 +10,8 @@ jobs:
         uses: actions/checkout@v2
         with:
             fetch-depth: 0
-
+    
+    # TODO: correct author of commits?
       - name: Mirror to gitlab.liu.se
         env:
             GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
@@ -21,3 +20,4 @@ jobs:
             git config --global user.email 'samlarsson94@gmail.com'
             git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/tddd27.git
             git push mirror ${GITHUB_REF##*/}
+
