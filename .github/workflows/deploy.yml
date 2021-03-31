@@ -16,7 +16,7 @@ jobs:
         env: 
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.HOST }}
-      - run: |
+        run: |
           echo "$SSH_PRIVATE_KEY" > mykey
           chmod 600 mykey
           ssh -i mykey -o StrictHostKeyChecking=no root@$SSH_HOST whoami
