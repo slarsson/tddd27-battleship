@@ -1,0 +1,44 @@
+name: Forward commits to gitlab.liu.se
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+            path: my-repo
+
+      - name: Set git config
+        run: |
+          git config --global user.name 'Samuel Larsson'
+          git config --global user.email 'samlarsson94@gmail.com'
+      
+      - name: Test..
+        env:
+            GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+            cd my-repo
+            mv .git ../repo.git
+            cd ..
+            rm -fr my-repo
+            cd repo.git
+            git config --bool core.bare true
+            git push --mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/my-test.git
+
+
+    #   - name: Push to gitlab
+    #     run: |
+    #       git checkout --orphan gh-pages
+    #       git --work-tree public add --all
+    #       git --work-tree public commit -m "SHA: $GITHUB_SHA"
+    #       git push origin HEAD:gh-pages --force
+
+
+
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository
