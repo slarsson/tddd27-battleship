@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-            path: my-repo
+            #path: my-repo
             fetch-depth: 0
 
       - name: Set git config
@@ -20,17 +20,24 @@ jobs:
           git config --global user.name 'Samuel Larsson'
           git config --global user.email 'samlarsson94@gmail.com'
       
-      - name: Test..
+        - name: Test..
         env:
             GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-            cd my-repo
-            mv .git ../repo.git
-            cd ..
-            rm -fr my-repo
-            cd repo.git
-            git config --bool core.bare true
-            git push --mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/my-test.git
+            git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/my-test.git
+            git push mirror master
+
+    #   - name: Test..
+    #     env:
+    #         GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+    #     run: |
+    #         cd my-repo
+    #         mv .git ../repo.git
+    #         cd ..
+    #         rm -fr my-repo
+    #         cd repo.git
+    #         git config --bool core.bare true
+    #         git push --mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/my-test.git
 
 
     #   - name: Push to gitlab
