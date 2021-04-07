@@ -1,0 +1,17 @@
+.drag {
+  width: 1000px;
+  height: 1000px;
+  background-color: rgba(54,45,89,1);
+  margin: 100px;
+}
+
+.item {
+  background-color: #e1567c;
+  width: 200px;
+  height: 44px;
+  position:absolute;
+  cursor: move;
+  padding: 20px;
+  user-select: none;
+  font-size: 20px;
+}
