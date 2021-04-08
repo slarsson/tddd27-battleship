@@ -11,7 +11,11 @@
   height: 44px;
   position:absolute;
   cursor: move;
-  padding: 20px;
   user-select: none;
   font-size: 20px;
+  overflow:hidden;
+
+  &:hover {
+  
+  }
 }
