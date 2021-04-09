@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
 
 import "./test.scss";
 
@@ -9,125 +9,39 @@ interface Position {
 
 const Drag = () => {
   const [ss, setSS] = useState<number>(50);
+  const [grid, setGrid] = useState<Grid>({
+    x: 0,
+    y: 0,
+    size: 10,
+  });
 
-  const fakenews = useFakeNews(ss, [
+  let gridDiv = createRef<HTMLDivElement>();
+
+  const fakenews = useFakeNews(ss, grid, [
     { width: 1, height: 5 },
-    { width: 6, height: 1 },
-    { width: 2, height: 4 },
+    { width: 5, height: 1 },
+    { width: 4, height: 1 },
+    { width: 1, height: 2 },
   ]);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     let v = Math.random() * 100;
-  //     console.log(v);
-  //     setSS(v);
-  //   }, 1000);
-  // }, []);
+  useEffect(() => {
+    if (gridDiv.current) {
+      grid.x = gridDiv.current.offsetLeft;
+      grid.y = gridDiv.current.offsetTop;
+    }
 
-  const [position, setPosition] = useState<Position>({ x: 1150, y: 100 });
-  const [rotation, setRotation] = useState<number>(0);
-  const [transition, setTransition] = useState<string>("");
-
-  const mouseDown = useRef<boolean>(false);
-  const newPosition = useRef<Position>(position);
-  const currentRotation = useRef<number>(rotation);
-  const div = useRef<HTMLDivElement>(null);
-  const offset = useRef<Position>({ x: 0, y: 0 });
-
-  // useEffect(() => {
-  //   newPosition.current = position;
-  // }, [position]);
-
-  // useEffect(() => {
-  //   currentRotation.current = rotation;
-  // }, [rotation]);
-
-  // const action = (evt: MouseEvent) => {
-  //   if (!mouseDown.current) return;
-  //   setTransition("");
-  //   setPosition({
-  //     x: evt.pageX - offset.current.x,
-  //     y: evt.pageY - offset.current.y,
-  //   });
-  // };
-
-  // const attach = (evt: MouseEvent) => {
-  //   if (!div.current) return;
-  //   const dimensions = div.current.getBoundingClientRect();
-
-  //   if (
-  //     evt.pageX < dimensions.left ||
-  //     evt.pageX > dimensions.left + dimensions.width ||
-  //     evt.pageY < dimensions.top ||
-  //     evt.pageY > dimensions.top + dimensions.height
-  //   ) {
-  //     return;
-  //   }
-
-  //   offset.current = {
-  //     x: evt.pageX - div.current.offsetLeft, // use div-ref since it does not care about rotation
-  //     y: evt.pageY - div.current.offsetTop,
-  //   };
-  //   mouseDown.current = true;
-  // };
-
-  // const detache = (evt: MouseEvent) => {
-  //   if (!mouseDown.current) return;
-  //   mouseDown.current = false;
-  //   if (
-  //     evt.pageX > 1200 ||
-  //     evt.pageX < 100 ||
-  //     evt.pageY < 100 ||
-  //     evt.pageY > 1000
-  //   ) {
-  //     setTransition("left 0.2s ease-out, top 0.2s ease-out");
-  //     setPosition({ x: 1150, y: 100 });
-  //   }
-  // };
-
-  // const keypress = (evt: KeyboardEvent) => {
-  //   if (evt.key == "ArrowLeft") {
-  //     setRotation(currentRotation.current + 90);
-  //   } else if (evt.key == "ArrowRight") {
-  //     setRotation(currentRotation.current - 90);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   mouseDown.current = false;
-  //   document.addEventListener("mousemove", action);
-  //   document.addEventListener("mousedown", attach);
-  //   document.addEventListener("mouseup", detache);
-  //   document.addEventListener("keydown", keypress);
-  //   return () => {
-  //     document.removeEventListener("mousemove", action);
-  //     document.removeEventListener("mousedown", attach);
-  //     document.removeEventListener("mouseup", detache);
-  //     document.removeEventListener("keydown", keypress);
-  //   };
-  // }, []);
-
-  // return (
-  //   <div className="drag">
-  //     <div
-  //       ref={div}
-  //       className="item"
-  //       style={{
-  //         left: position.x,
-  //         top: position.y,
-  //         transition: transition,
-  //         transform: `rotate(${rotation}deg)`,
-  //       }}
-  //     >
-  //       x: {position.x}, y: {position.y}
-  //       {JSON.stringify(fakenews)}
-  //     </div>
-  //   </div>
-  // );
+    setGrid({ ...grid });
+    console.log(gridDiv.current?.offsetLeft);
+    console.log(gridDiv.current?.offsetTop);
+  }, []);
 
   return (
-    <div className="drag">
-      {fakenews.map((item, i) => {
+    <div
+      className="drag"
+      ref={gridDiv}
+      style={{ width: ss * grid.size, height: ss * grid.size }}
+    >
+      {fakenews.items.map((item, i) => {
         return (
           <div
             key={"wtf" + i}
@@ -145,6 +59,22 @@ const Drag = () => {
           </div>
         );
       })}
+
+      <div className="my-grid">
+        {fakenews.grid.map((item, i) => {
+          return (
+            <div
+              key={i}
+              style={{
+                //backgroundColor: `rgb(${Math.random() * 255}, 1, 1)`,
+                width: ss + "px",
+                height: ss + "px",
+                backgroundColor: item == 1 ? "lightgreen" : "blue",
+              }}
+            ></div>
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -166,9 +96,17 @@ interface Dimensions {
   height: number;
 }
 
-const useFakeNews = (size: number, dimensions: Dimensions[]) => {
-  const [items, setItems] = useState<Item[]>([]);
+interface Grid {
+  x: number;
+  y: number;
+  size: number;
+}
 
+const useFakeNews = (size: number, _grid: Grid, dimensions: Dimensions[]) => {
+  const [items, setItems] = useState<Item[]>([]);
+  const [grid, setGrid] = useState<number[]>(
+    new Array(_grid.size * _grid.size).fill(0)
+  );
   const target = useRef<number>(-1);
 
   // const [news, setNews] = useState("ggwp");
@@ -192,6 +130,80 @@ const useFakeNews = (size: number, dimensions: Dimensions[]) => {
         return { ...v };
       })
     );
+
+    let itemcx =
+      realItems.current[target.current].x +
+      realItems.current[target.current].width * 0.5;
+    let itemcy =
+      realItems.current[target.current].y +
+      realItems.current[target.current].height * 0.5;
+
+    let left = 100;
+    let top = 100;
+
+    let min = Infinity;
+    let best = -1;
+    for (let i = 0; i < grid.length; i++) {
+      let row = Math.trunc(i / _grid.size);
+      let col = i % _grid.size;
+
+      let cx = left + size * 0.5 + size * col;
+      let cy = top + size * 0.5 + size * row;
+
+      let len = Math.abs(cx - itemcx) + Math.abs(cy - itemcy);
+
+      if (len < min) {
+        min = len;
+        best = i;
+      }
+
+      //grid[i] = cx;
+      //grid[i] = cy;
+
+      // let row = i % _grid.size;
+      // let col = row * _grid.size - i;
+      // let gx1 = left + size * row;
+      // let gx2 = gx1 + size;
+      // if (x1 > gx2 || gx1 > x2) {
+      //   grid[i] = 0;
+      //   continue;
+      // }
+      // // let gy1 = top + size + size * col;
+      // // if (y2 < gy1) {
+      // //   grid[i] = 0;
+      // //   continue;
+      // // }
+      // grid[i] = 1;
+      // if (x1 < gx1) {
+      //   grid[i] = 1;
+      // } else {
+      //   grid[i] = 0;
+      // }
+    }
+
+    //let index = [best];
+
+    for (let i = 0; i < grid.length; i++) {
+      grid[i] = 0;
+    }
+
+    let nx = dimensions[target.current].width;
+    let start = best - Math.trunc(nx / 2);
+    for (let i = 0; i < nx; i++) {
+      let index = start + i;
+      if (index < 0 || index >= _grid.size * _grid.size) continue;
+      grid[index] = 1;
+    }
+
+    let ny = dimensions[target.current].height;
+    start = best - _grid.size * Math.trunc(ny / 2);
+    for (let i = 0; i < ny; i++) {
+      let index = start + _grid.size * i;
+      if (index < 0 || index >= _grid.size * _grid.size) continue;
+      grid[index] = 1;
+    }
+
+    setGrid(grid);
   };
 
   const attach = (evt: MouseEvent) => {
@@ -214,90 +226,88 @@ const useFakeNews = (size: number, dimensions: Dimensions[]) => {
 
     if (index < 0) return;
     target.current = index;
-
-    // realItems.current[targetItem.id].offsetX =
-    //   evt.pageX - realItems.current[targetItem.id].x;
-    // realItems.current[targetItem.id].offsetY =
-    //   evt.pageY - realItems.current[targetItem.id].y;
     setItems(realItems.current);
-
-    // let targetItem: Item | null = null;
-    // for (let boat of realItems.current) {
-    //   if (
-    //     evt.pageX <= boat.x + boat.width &&
-    //     evt.pageX >= boat.x &&
-    //     evt.pageY <= boat.y + boat.height &&
-    //     evt.pageY >= boat.y
-    //   ) {
-    //     targetItem = boat;
-    //     break;
-    //   }
-    // }
-
-    // if (!targetItem) return;
-    // target.current = targetItem.id;
-
-    // realItems.current[targetItem.id].offsetX =
-    //   evt.pageX - realItems.current[targetItem.id].x;
-    // realItems.current[targetItem.id].offsetY =
-    //   evt.pageY - realItems.current[targetItem.id].y;
-    // setItems(realItems.current);
-
-    //console.log("FOUND BOAT", targetItem.id);
-
-    // console.log(evt.pageX);
-    // let swag = items.map((v) => {
-    //   v.x = Math.random() * 1000;
-    //   v.y = Math.random() * 500;
-    //   return { ...v };
-    // });
-    // setItems(swag);
-    // target.current++;
-    // if (target.current > items.length) {
-    //   target.current = 0;
-    // }
   };
 
   const detach = (evt: MouseEvent) => {
     if (target.current < 0) return;
     let reset = false;
 
-    let x1 = realItems.current[target.current].x;
-    let x2 =
-      realItems.current[target.current].x +
-      realItems.current[target.current].width;
-    let y1 = realItems.current[target.current].y;
-    let y2 =
-      realItems.current[target.current].y +
-      realItems.current[target.current].height;
+    // let x1 = realItems.current[target.current].x;
+    // let x2 =
+    //   realItems.current[target.current].x +
+    //   realItems.current[target.current].width;
+    // let y1 = realItems.current[target.current].y;
+    // let y2 =
+    //   realItems.current[target.current].y +
+    //   realItems.current[target.current].height;
 
-    for (let i = 0; i < realItems.current.length; i++) {
-      if (i == target.current) continue;
+    // for (let i = 0; i < realItems.current.length; i++) {
+    //   if (i == target.current) continue;
 
-      // x-axis
-      if (
-        x1 > realItems.current[i].x + realItems.current[i].width ||
-        x2 < realItems.current[i].x
-      ) {
-        continue;
-      }
+    //   // x-axis
+    //   if (
+    //     x1 > realItems.current[i].x + realItems.current[i].width ||
+    //     x2 < realItems.current[i].x
+    //   ) {
+    //     continue;
+    //   }
 
-      // y-axis
-      if (
-        y1 > realItems.current[i].y + realItems.current[i].height ||
-        y2 < realItems.current[i].y
-      ) {
-        continue;
-      }
-      reset = true;
-      break;
-    }
+    //   // y-axis
+    //   if (
+    //     y1 > realItems.current[i].y + realItems.current[i].height ||
+    //     y2 < realItems.current[i].y
+    //   ) {
+    //     continue;
+    //   }
+    //   reset = true;
+    //   break;
+    // }
 
     if (reset) {
       realItems.current[target.current].x = 1200;
       realItems.current[target.current].y = 100;
       realItems.current[target.current].transition =
         "left 0.2s ease-out, top 0.2s ease-out";
+      setItems(realItems.current);
+    } else {
+      let itemcx =
+        realItems.current[target.current].x +
+        realItems.current[target.current].width * 0.5;
+      let itemcy =
+        realItems.current[target.current].y +
+        realItems.current[target.current].height * 0.5;
+
+      let left = 100;
+      let top = 100;
+
+      let min = Infinity;
+      let best = { x: 0, y: 0 };
+      for (let i = 0; i < grid.length; i++) {
+        let row = Math.trunc(i / _grid.size);
+        let col = i % _grid.size;
+
+        let cx = left + size * 0.5 + size * col;
+        let cy = top + size * 0.5 + size * row;
+
+        let len = Math.abs(cx - itemcx) + Math.abs(cy - itemcy);
+
+        if (len < min) {
+          min = len;
+          best.x = cx;
+          best.y = cy;
+        }
+      }
+
+      let nx =
+        Math.trunc(dimensions[target.current].width * 0.5) * size + size * 0.5;
+      let ny =
+        Math.trunc(dimensions[target.current].height * 0.5) * size + size * 0.5;
+
+      realItems.current[target.current].x = best.x - nx;
+      realItems.current[target.current].y = best.y - ny;
+      realItems.current[target.current].transition =
+        "left 0.1s ease-out, top 0.1s ease-out";
       setItems(realItems.current);
     }
 
@@ -383,7 +393,7 @@ const useFakeNews = (size: number, dimensions: Dimensions[]) => {
 
     setItems(_items);
   }, [size]);
-  return items;
+  return { items, grid };
 };
 
 export default Drag;

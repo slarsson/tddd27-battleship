@@ -1,6 +1,6 @@
 .drag {
-  width: 1000px;
-  height: 1000px;
+  //width: 1000px;
+  //height: 1000px;
   background-color: rgba(54,45,89,1);
   margin: 100px;
 }
@@ -17,5 +17,21 @@
 
   &:hover {
   
+  }
+}
+
+.my-grid {
+  background-color: red;
+  display: inline-flex;
+  flex-wrap: wrap;
+
+  div {
+    color: gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    box-sizing: border-box;
+    
   }
 }
