@@ -1,109 +1,82 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
+
+import useGrid, { Grid } from './useGrid';
+
 
 import "./test.scss";
-
-interface Position {
-  x: number;
-  y: number;
-}
-
 const Drag = () => {
-  const [position, setPosition] = useState<Position>({ x: 1150, y: 100 });
-  const [rotation, setRotation] = useState<number>(0);
-  const [transition, setTransition] = useState<string>("");
+  const [ss, setSS] = useState<number>(40);
+  const [grid, setGrid] = useState<Grid>({
+    x: 100,
+    y: 100,
+    size: 20,
+  });
 
-  const mouseDown = useRef<boolean>(false);
-  const newPosition = useRef<Position>(position);
-  const currentRotation = useRef<number>(rotation);
-  const div = useRef<HTMLDivElement>(null);
-  const offset = useRef<Position>({ x: 0, y: 0 });
+  let gridDiv = createRef<HTMLDivElement>();
 
-  useEffect(() => {
-    newPosition.current = position;
-  }, [position]);
-
-  useEffect(() => {
-    currentRotation.current = rotation;
-  }, [rotation]);
-
-  const action = (evt: MouseEvent) => {
-    if (!mouseDown.current) return;
-    setTransition("");
-    setPosition({
-      x: evt.pageX - offset.current.x,
-      y: evt.pageY - offset.current.y,
-    });
-  };
-
-  const attach = (evt: MouseEvent) => {
-    if (!div.current) return;
-    const dimensions = div.current.getBoundingClientRect();
-
-    if (
-      evt.pageX < dimensions.left ||
-      evt.pageX > dimensions.left + dimensions.width ||
-      evt.pageY < dimensions.top ||
-      evt.pageY > dimensions.top + dimensions.height
-    ) {
-      return;
-    }
-
-    offset.current = {
-      x: evt.pageX - div.current.offsetLeft, // use div-ref since it does not care about rotation
-      y: evt.pageY - div.current.offsetTop,
-    };
-    mouseDown.current = true;
-  };
-
-  const detache = (evt: MouseEvent) => {
-    if (!mouseDown.current) return;
-    mouseDown.current = false;
-    if (
-      evt.pageX > 1200 ||
-      evt.pageX < 100 ||
-      evt.pageY < 100 ||
-      evt.pageY > 1000
-    ) {
-      setTransition("left 0.2s ease-out, top 0.2s ease-out");
-      setPosition({ x: 1150, y: 100 });
-    }
-  };
-
-  const keypress = (evt: KeyboardEvent) => {
-    if (evt.key == "ArrowLeft") {
-      setRotation(currentRotation.current + 90);
-    } else if (evt.key == "ArrowRight") {
-      setRotation(currentRotation.current - 90);
-    }
-  };
+  const fakenews = useGrid(ss, grid, [
+    { size: 2, horizontal: true, originX: 0, originY: 0 },
+    { size: 5, horizontal: true, originX: 0, originY: 0 },
+    { size: 3, horizontal: false, originX: 0, originY: 0 },
+    { size: 1, horizontal: true, originX: 0, originY: 0 },
+    { size: 2, horizontal: true, originX: 0, originY: 0 },
+    { size: 5, horizontal: true, originX: 0, originY: 0 },
+    { size: 3, horizontal: false, originX: 0, originY: 0 },
+    { size: 1, horizontal: true, originX: 0, originY: 0 }
+  ]);
 
   useEffect(() => {
-    mouseDown.current = false;
-    document.addEventListener("mousemove", action);
-    document.addEventListener("mousedown", attach);
-    document.addEventListener("mouseup", detache);
-    document.addEventListener("keydown", keypress);
-    return () => {
-      document.removeEventListener("mousemove", action);
-      document.removeEventListener("mousedown", attach);
-      document.removeEventListener("mouseup", detache);
-      document.removeEventListener("keydown", keypress);
-    };
+    if (gridDiv.current) {
+      grid.x = gridDiv.current.offsetLeft;
+      grid.y = gridDiv.current.offsetTop;
+    }
+
+    setGrid({ ...grid });
+    console.log(gridDiv.current?.offsetLeft);
+    console.log(gridDiv.current?.offsetTop);
   }, []);
 
   return (
-    <div className="drag">
-      <div
-        ref={div}
-        className="item"
-        style={{
-          left: position.x,
-          top: position.y,
-          transition: transition,
-          transform: `rotate(${rotation}deg)`,
-        }}
-      >
-        x: {position.x}, y: {position.y}
+    <div
+      className="drag"
+      ref={gridDiv}
+      style={{ width: ss * grid.size, height: ss * grid.size }}
+    >
+      {fakenews.items.map((item, i) => {
+        return (
+          <div
+            key={"wtf" + i}
+            className="item"
+            style={{
+              width: item.width + "px",
+              height: item.height + "px",
+              left: item.x,
+              top: item.y,
+              transform: `rotate(${item.rotation}deg)`,
+              transition: item.transition,
+            }}
+          >
+            
+          </div>
+        );
+      })}
+
+      <div className="my-grid">
+        {fakenews.grid.map((item, i) => {
+          return (
+            <div
+              key={i}
+              style={{
+                //backgroundColor: `rgb(${Math.random() * 255}, 1, 1)`,
+                width: ss + "px",
+                height: ss + "px",
+                backgroundColor: item == 1 ? "lightgreen" : "blue",
+              }}
+            >
+              {item > 1 ? item : ""}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

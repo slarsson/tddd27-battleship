@@ -1,6 +1,6 @@
 .drag {
-  width: 1000px;
-  height: 1000px;
+  //width: 1000px;
+  //height: 1000px;
   background-color: rgba(54,45,89,1);
   margin: 100px;
 }
@@ -11,7 +11,32 @@
   height: 44px;
   position:absolute;
   cursor: move;
-  padding: 20px;
   user-select: none;
   font-size: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 2px solid red;
+
+  opacity: 0.7;
+
+  &:hover {
+  
+  }
+}
+
+.my-grid {
+  background-color: red;
+  display: inline-flex;
+  flex-wrap: wrap;
+
+  div {
+    color: gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    box-sizing: border-box;
+    
+  }
 }
