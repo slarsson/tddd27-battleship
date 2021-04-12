@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
-      "sourceMap": true
+      "sourceMap": true,
+      "strict": true,
+      "typeRoots": ["node_modules/@types"]
     }
 }
