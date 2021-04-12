@@ -19,17 +19,24 @@
             let socket = new WebSocket('ws://localhost:3000'); 
             socket.onopen = () => {
                 socket.send(JSON.stringify({
-                    id: res.id
-                }));
-
-                socket.send(JSON.stringify({
-                    id: 'bad_id'
+                    type: 0,
+                    gameId: res.gameId,
+                    token: res.token,
                 }));
             };
 
             socket.onmessage = (m) => console.log('MESSAGE', m);
             socket.onclose = () => console.log('CLOSE');
             socket.onerror = () => console.log('ERROR');
+
+            setInterval(() => {
+                socket.send(JSON.stringify({
+                    type: -1,
+                    gameId: res.gameId,
+                    token: res.token,
+                    payload: 'my_test'
+                }));
+            }, 1000);
         });
 
     </script>

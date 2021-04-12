@@ -2,6 +2,7 @@
     "compilerOptions": {
       "sourceMap": true,
       "strict": true,
-      "typeRoots": ["node_modules/@types"]
+      "typeRoots": ["node_modules/@types"],
+      "resolveJsonModule": true
     }
 }

@@ -1,15 +1,17 @@
-import * as express from "express";
-import { Request, Response } from "express";
+import * as express from 'express';
+import { Request, Response } from 'express';
 import * as WebSocket from 'ws';
 import { v4 as uuidv4 } from 'uuid';
-const { PORT = 3000 } = process.env;
+import { validateMessage, MessageType } from '../../interfaces';
+import Battleship from './battleship';
 
+// setup 
 const app = express();
-const server = app.listen(PORT, () => console.log('started..'));
+const server = app.listen(3000, () => console.log('started..'));
 const wss = new WebSocket.Server({ server: server });
 
-// data
-const players = new Map<string, WebSocket | null>();
+// state
+const games = new Map<string, Battleship>();
 
 // middlewares
 app.use((req: Request, res: Response, next: Function) => {
@@ -24,33 +26,62 @@ app.use((req: Request, res: Response, next: Function) => {
 
 // routes
 app.get('/', (req: Request, res: Response) => {
-  res.json({ numberOfPlayers: players.size, test: 'ok?' });
+  res.json({ api: 0 });
 });
 
 app.post('/create', (req: Request, res: Response) => {
+  const token = uuidv4();
   const id = uuidv4();
-  players.set(id, null);
-  res.json({ gameId: 'TODO', token: id });
+
+  games.set(id, new Battleship(id, token));
+
+  res.json({
+    gameId: id,
+    token: token
+  });
 });
 
 app.post('/join', (req: Request, res: Response) => {
   res.json({});
 });
 
+app.options('*', (req: Request, res: Response) => res.end(''));
+
 // socket 
 wss.on('connection', (ws: WebSocket) => {
-
-  console.log('open..?')
-  ws.on('open', (_ws: WebSocket) => {
-    console.log('maybe open..?')
-  });
-
   ws.on('message', (msg: string) => {
-    console.log(msg);
+    console.log('MSG:', msg);
+
+    let data: any;
+    let type: MessageType;
+    try {
+      data = JSON.parse(msg);
+      type = validateMessage(data);
+      // TODO: add some type check
+    } catch (err) {
+      console.error(err);
+      return;
+      // TODO: disconnect client
+    }
+
+    const game = games.get(data.gameId);
+    if (game === undefined) {
+      console.error('game not found');
+      // TODO
+      return;
+    }
+
+    if (data.type == MessageType.JOIN) {
+      game.addPlayer(data, ws);
+      return;
+    }
+
+    game.handler(type, data);
   });
 
-  ws.on('close', (_ws: WebSocket) => { });
-  ws.on('error', (_ws: WebSocket) => { });
-  ws.on('ping', (_ws: WebSocket) => { });
-  ws.on('pong', (_ws: WebSocket) => { });
+  ws.on('open', (w: WebSocket) => { });
+  ws.on('close', (w: WebSocket) => { });
+  ws.on('error', (w: WebSocket) => { });
+  ws.on('ping', (w: WebSocket) => { });
+  ws.on('pong', (w: WebSocket) => { });
 });
