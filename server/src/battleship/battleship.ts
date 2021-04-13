@@ -11,6 +11,11 @@ interface Players {
   [key: string]: Player;
 }
 
+interface Tokens {
+  p1: string;
+  p2: string;
+}
+
 class Battleship {
 
   private activated: boolean = false;
@@ -21,36 +26,63 @@ class Battleship {
   private p1: string;
   private p2: string;
 
-  constructor(id: string, p1: string) {
+  private p1Name: string = 'player1';
+  private p2Name: string = 'player2';
+
+  constructor(id: string) {
     this.id = id;
-    this.p1 = p1;
+    this.p1 = uuidv4();
     this.p2 = uuidv4();
   }
 
+  public getTokens(): Tokens {
+    return {
+      p1: this.p1,
+      p2: this.p2
+    };
+  }
+
+  public isActivated(): boolean {
+    return this.activated;
+  }
+
+  public activate() {
+    this.activated = true;
+  }
+
+  public setName(token: string, name: string): boolean {
+    if (this.p1 == token) {
+      if (this.p2Name == name) return false;
+      console.log('SET NAME P1', name, this.p1, this.id)
+      this.p1Name = name;
+      return true;
+    }
+
+    if (this.p2 == token) {
+      if (this.p1Name == name) return false;
+      console.log('SET NAME P2', name, this.p2, this.id)
+      this.p2Name = name;
+      return true;
+    }
+
+    return false;
+  }
+
+
   public addPlayer(msg: any, ws: WebSocket): boolean {
-    if (msg.type != MessageType.JOIN) return false;
-    if (!('token' in msg)) return false;
+    if (msg.token != this.p1 && msg.token != this.p2) return false;
 
-    // ?
-    const token: string = msg.token;
-
-
-    console.log('JOIN GAME EVENT', msg.token);
-
-    this.players[token] = {
-      name: msg.name,
+    this.players[msg.token] = {
+      name: 'TODO',
       connection: ws
     };
+
+    console.log('JOIN GAME EVENT', this.id);
 
     this.effect();
     return true;
   }
 
-  public request(): string | null {
-    if (this.activated) return null;
-    this.activated = true;
-    return this.p2;
-  }
 
   public handler(type: MessageType, data: any) {
     if (data.token != this.p1 && data.token != this.p2) return;

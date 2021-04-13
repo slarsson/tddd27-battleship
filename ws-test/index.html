@@ -10,7 +10,13 @@
 
 
         fetch('http://localhost:3000/create', {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: 'j0nas',
+            })
         })
         .then(res => res.json())
         .then(res => {
