@@ -13,6 +13,8 @@ interface Players {
 
 class Battleship {
 
+  private activated: boolean = false;
+
   private id: string;
   private players: Players = {};
 
@@ -32,17 +34,43 @@ class Battleship {
     // ?
     const token: string = msg.token;
 
+
+    console.log('JOIN GAME EVENT', msg.token);
+
     this.players[token] = {
-      name: 'TODO',
+      name: msg.name,
       connection: ws
     };
+
+    this.effect();
     return true;
   }
 
+  public request(): string | null {
+    if (this.activated) return null;
+    this.activated = true;
+    return this.p2;
+  }
 
   public handler(type: MessageType, data: any) {
     if (data.token != this.p1 && data.token != this.p2) return;
     console.log('update:', this.id);
+  }
+
+  public effect() {
+
+    let p: string[] = [];
+
+    for (const [key, value] of Object.entries(this.players)) {
+      p.push(value.name);
+    }
+
+    let msg = JSON.stringify(p);
+    for (const [key, value] of Object.entries(this.players)) {
+      value.connection.send(msg); // can .send throw?
+    }
+
+    //console.log(this.players);
   }
 }
 

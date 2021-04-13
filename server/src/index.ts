@@ -14,6 +14,8 @@ const wss = new WebSocket.Server({ server: server });
 const games = new Map<string, Battleship>();
 
 // middlewares
+app.use(express.json({ limit: '1mb' }));
+
 app.use((req: Request, res: Response, next: Function) => {
   res.set({
     'Access-Control-Allow-Credentials': 'true',
@@ -42,7 +44,35 @@ app.post('/create', (req: Request, res: Response) => {
 });
 
 app.post('/join', (req: Request, res: Response) => {
-  res.json({});
+  if (!('gameId' in req.body)) {
+    res.status(400).json({
+      error: 'missing gameId'
+    });
+    return;
+  }
+
+  const game = games.get(req.body.gameId);
+  if (game === undefined) {
+    // use 422?
+    res.status(422).json({
+      error: 'no game mate'
+    });
+    return;
+  }
+
+  const token = game.request();
+  if (token === null) {
+    res.status(422).json({
+      error: 'to late'
+    });
+    return;
+  }
+
+  console.log(req.body);
+
+  res.json({
+    token: token
+  });
 });
 
 app.options('*', (req: Request, res: Response) => res.end(''));
@@ -50,7 +80,7 @@ app.options('*', (req: Request, res: Response) => res.end(''));
 // socket 
 wss.on('connection', (ws: WebSocket) => {
   ws.on('message', (msg: string) => {
-    console.log('MSG:', msg);
+    //console.log('MSG:', msg);
 
     let data: any;
     let type: MessageType;
@@ -79,9 +109,16 @@ wss.on('connection', (ws: WebSocket) => {
     game.handler(type, data);
   });
 
+  setInterval(() => {
+    ws.ping();
+  }, 1000);
+
   ws.on('open', (w: WebSocket) => { });
   ws.on('close', (w: WebSocket) => { });
   ws.on('error', (w: WebSocket) => { });
-  ws.on('ping', (w: WebSocket) => { });
-  ws.on('pong', (w: WebSocket) => { });
+  ws.on('ping', (w: WebSocket) => w.pong());
+
+  ws.on('pong', (w: WebSocket) => {
+    console.log('RECIVED PONG');
+  });
 });

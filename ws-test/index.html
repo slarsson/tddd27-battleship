@@ -14,18 +14,26 @@
         })
         .then(res => res.json())
         .then(res => {
+            
+            const div = document.getElementById('game');
+
+            div.innerHTML = res.gameId;
+            
             console.log(res);
 
             let socket = new WebSocket('ws://localhost:3000'); 
             socket.onopen = () => {
                 socket.send(JSON.stringify({
                     type: 0,
+                    name: 'player1',
                     gameId: res.gameId,
                     token: res.token,
                 }));
             };
 
-            socket.onmessage = (m) => console.log('MESSAGE', m);
+            socket.onmessage = (m) => {
+                console.log('MESSAGE', m);
+            }
             socket.onclose = () => console.log('CLOSE');
             socket.onerror = () => console.log('ERROR');
 
@@ -33,7 +41,7 @@
                 socket.send(JSON.stringify({
                     type: -1,
                     gameId: res.gameId,
-                    token: res.token,
+                    token: res.token + '4',
                     payload: 'my_test'
                 }));
             }, 1000);
@@ -42,6 +50,6 @@
     </script>
 
     <body>
-        test
+        <div id="game"></div>
     </body>
 </html>
