@@ -1,14 +1,10 @@
-import { MessageType } from '../../../interfaces';
+import { MessageType, TileState, GameState, Board } from '../../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
+import { State, GameStates, GameBoard } from './state';
 
-interface Player {
-  name: string;
-  connection: WebSocket;
-}
-
-interface Players {
-  [key: string]: Player;
+interface Connection {
+  [key: string]: WebSocket;
 }
 
 interface Tokens {
@@ -21,7 +17,7 @@ class Battleship {
   private activated: boolean = false;
 
   private id: string;
-  private players: Players = {};
+  private connections: Connection = {};
 
   private p1: string;
   private p2: string;
@@ -29,10 +25,17 @@ class Battleship {
   private p1Name: string = 'player1';
   private p2Name: string = 'player2';
 
-  constructor(id: string) {
+  private state: State;
+
+  constructor(id: string, size = 5) {
     this.id = id;
     this.p1 = uuidv4();
     this.p2 = uuidv4();
+    this.state = {
+      mode: GameStates.WaitingForPlayers,
+      p1Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)},
+      p2Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)}
+    }
   }
 
   public getTokens(): Tokens {
@@ -69,40 +72,73 @@ class Battleship {
   }
 
 
-  public addPlayer(msg: any, ws: WebSocket): boolean {
-    if (msg.token != this.p1 && msg.token != this.p2) return false;
-
-    this.players[msg.token] = {
-      name: 'TODO',
-      connection: ws
-    };
-
-    console.log('JOIN GAME EVENT', this.id);
-
-    this.effect();
+  public addPlayer(token: string, ws: WebSocket): boolean {
+    if (token != this.p1 && token != this.p2) return false;
+    this.connections[token] = ws;
+    console.log('CONNECT:', token);
+    console.log(this.state);
     return true;
   }
 
 
-  public handler(type: MessageType, data: any) {
-    if (data.token != this.p1 && data.token != this.p2) return;
-    console.log('update:', this.id);
+  public handler(msg: any) {
+    switch (msg.type) {
+      case MessageType.Status:
+        this.sendBoardState(msg.token);
+        break;
+
+      case MessageType.Shoot:
+        this.shoot(msg.token, msg.index);
+        break;
+    
+      default:
+        break;
+    }
   }
 
-  public effect() {
+  private shoot(token: string, index: number) {
+    if ((token != this.p1 && token != this.p2) || index < 0) return;
 
-    let p: string[] = [];
-
-    for (const [key, value] of Object.entries(this.players)) {
-      p.push(value.name);
+    if (token == this.p1) {
+      if (index >= this.state.p1Board.enemy.length || index >= this.state.p2Board.self.length) return;
+      this.state.p1Board.enemy[index] = 999;
+      this.state.p2Board.self[index] = 999;      
+    } else {
+      if (index >= this.state.p2Board.enemy.length || index >= this.state.p1Board.self.length) return;
+      this.state.p2Board.enemy[index] = 999;
+      this.state.p1Board.self[index] = 999;
     }
 
-    let msg = JSON.stringify(p);
-    for (const [key, value] of Object.entries(this.players)) {
-      value.connection.send(msg); // can .send throw?
+    this.sendBoardState(this.p1);
+    this.sendBoardState(this.p2);
+  } 
+
+  private sendBoardState(token: string) {
+    if (token != this.p1 && token != this.p2) return;
+    
+    let board: GameBoard;
+    if (token == this.p1) {
+      board = this.state.p1Board;
+    } else {
+      board = this.state.p2Board
     }
 
-    //console.log(this.players);
+    let msg: GameState = {
+      type: MessageType.GameState,
+      board: {
+        self: board.self, 
+        enemy: board.enemy
+      }
+    };
+
+    this.broadcast(token, msg);
+  }
+
+  private broadcast(token: string, msg: any, all = false) {
+    const target = this.connections[token];
+    if (target === undefined) return;
+    // TODO: check errors?
+    target.send(JSON.stringify(msg));
   }
 }
 

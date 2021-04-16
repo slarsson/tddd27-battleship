@@ -12,34 +12,33 @@ const ws = (server: any, cb: any): WebSocket.Server => {
   cb();
 
   wss.on('connection', (ws: WebSocket) => {
-    ws.on('message', (msg: string) => {
-      //console.log('MSG:', msg);
-
-      let data: any;
-      let type: MessageType;
+    ws.on('message', (payload: string) => {
+      let msg: any;
       try {
-        data = JSON.parse(msg);
-        type = validateMessage(data);
-        // TODO: add some type check
+        msg = JSON.parse(payload);
+        if (!validateMessage(msg)) {
+          // TODO: disconnect client
+          return;
+        }
       } catch (err) {
         console.error(err);
-        return;
         // TODO: disconnect client
+        return;
       }
 
-      const game = games.get(data.gameId);
+      const game = games.get(msg.gameId);
       if (game === undefined) {
         console.error('game not found');
-        // TODO
+        // TODO: error?
         return;
       }
 
-      if (data.type == MessageType.JOIN) {
-        game.addPlayer(data, ws);
+      if (msg.type == MessageType.Connect) {
+        game.addPlayer(msg.token, ws);
         return;
       }
 
-      game.handler(type, data);
+      game.handler(msg);
     });
 
     setInterval(() => {

@@ -30,27 +30,60 @@
             let socket = new WebSocket('ws://localhost:3000'); 
             socket.onopen = () => {
                 socket.send(JSON.stringify({
-                    type: 0,
-                    name: 'player1',
+                    type: 'connect',
                     gameId: res.gameId,
                     token: res.token,
                 }));
+
+                // setInterval(() => {
+                //     socket.send(JSON.stringify({
+                //         type: 'status',
+                //         gameId: res.gameId,
+                //         token: res.token,
+                //     }));
+                // }, 5000);
+
+                setTimeout(() => {
+                    socket.send(JSON.stringify({
+                        type: 'status',
+                        gameId: res.gameId,
+                        token: res.token,
+                    }));
+                }, 1000);
+
+                setTimeout(() => {
+                    socket.send(JSON.stringify({
+                        type: 'shoot',
+                        gameId: res.gameId,
+                        token: res.token,
+                        index: 12
+                    }));
+                }, 2000);
+
+                setTimeout(() => {
+                    socket.send(JSON.stringify({
+                        type: 'status',
+                        gameId: res.gameId,
+                        token: res.token,
+                    }));
+                }, 5000);
+                
             };
 
             socket.onmessage = (m) => {
-                console.log('MESSAGE', m);
+                console.log(JSON.parse(m.data));
             }
             socket.onclose = () => console.log('CLOSE');
             socket.onerror = () => console.log('ERROR');
 
-            setInterval(() => {
-                socket.send(JSON.stringify({
-                    type: -1,
-                    gameId: res.gameId,
-                    token: res.token + '4',
-                    payload: 'my_test'
-                }));
-            }, 1000);
+            // setInterval(() => {
+            //     socket.send(JSON.stringify({
+            //         type: -1,
+            //         gameId: res.gameId,
+            //         token: res.token + '4',
+            //         payload: 'my_test'
+            //     }));
+            // }, 1000);
         });
 
     </script>
