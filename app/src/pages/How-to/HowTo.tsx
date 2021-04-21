@@ -1,15 +1,14 @@
 import React from "react";
 
-const Settings = () => {
+export const HowTo = () => {
 
 
     return (
         <div>
-            settings
+            how toasdasd
         </div>
     )
 
 
 }
 
-export default Settings;

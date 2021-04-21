@@ -1,23 +1,18 @@
-import React, { useState, useEffect, useRef  } from "react";
-import "../styles/home.scss";
-import battleship from "../assets/battleship.png";
+import React, { useState, useEffect } from "react";
+import "./home.scss";
+import battleship from "../../assets/battleship.png";
 
-const Home = () => {
+export const Home = () => {
   const [playerName, setPlayerName] = useState("");
   const [gameId, setGameId] = useState("");
   const [createToggler, setCreateToggler] = useState(true);
   const [joinToggler, setJoinToggler] = useState(true);
 
   useEffect(() => {
-    //console.log(playerName);
-    //console.log(gameId);
-    
   }, [playerName, gameId]);
 
   const handleCreate = () => {};
-
   const handleJoin = () => {};
-
 
   return (
     <div className="container">
@@ -35,7 +30,7 @@ const Home = () => {
             >
               Create game
             </button>
-          ) : (
+            ) : (
             <div className="input-container">
               <input
                 className="input-field"
@@ -55,7 +50,7 @@ const Home = () => {
                 Create
               </button>
             </div>
-          )}
+          )} 
         </form>
 
         <form className="form">
@@ -92,6 +87,3 @@ const Home = () => {
     </div>
   );
 };
-
-export default Home;
-
