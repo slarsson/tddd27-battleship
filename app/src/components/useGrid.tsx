@@ -286,6 +286,34 @@ const useGrid = (
 
   useEffect(() => {
     // TODO: update when size change
+    let _items: Item[] = [];
+    let i = 0;
+    for (let row of dimensions) {
+      let width = 1;
+      let height = 1;
+      if (row.horizontal) {
+        width = row.size;
+      } else {
+        height = row.size;
+      }
+      
+      _items.push({
+        x: 0,
+        y: 0,
+        offsetX: 0,
+        offsetY: 0,
+        originX: row.originX,
+        originY: row.originY,
+        width: width * size,
+        height: height * size,
+        rotation: 0,
+        transition: "",
+        id: 100 + i,
+      });
+      i++;
+    }
+
+    setItems(_items);
   }, [size]);
 
   return { items: items, grid: _grid };

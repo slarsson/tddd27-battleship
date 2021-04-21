@@ -1,6 +1,6 @@
 import React from "react";
 import "./index.scss"
-import { Home, HowTo } from './pages'
+import { Home, HowTo, Test } from './pages'
 import { Navbar } from './components';
 
 import {
@@ -31,6 +31,7 @@ export default function App() {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/how-to" component={HowTo} />
+          <Route exact path="/test" component={Test} />
         </Switch>
       </div>
     </Router>
