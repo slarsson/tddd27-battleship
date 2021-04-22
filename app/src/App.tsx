@@ -3,6 +3,8 @@ import "./index.scss"
 import { Home, HowTo, Test } from './pages'
 import { Navbar } from './components';
 
+import { RecoilRoot } from 'recoil';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,17 +25,19 @@ export default function App() {
   ]
   
   return (
-    <Router>
-      <Navbar 
-        navLinks={navLinks}
-      />
-      <div className="body"> 
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/how-to" component={HowTo} />
-          <Route exact path="/test" component={Test} />
-        </Switch>
-      </div>
-    </Router>
+    <RecoilRoot>
+      <Router>
+        <Navbar 
+          navLinks={navLinks}
+        />
+        <div className="body"> 
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/how-to" component={HowTo} />
+            <Route exact path="/test" component={Test} />
+          </Switch>
+        </div>
+      </Router>
+    </RecoilRoot>
   );
 }

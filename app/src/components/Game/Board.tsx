@@ -1,6 +1,32 @@
 import React, { useState, useEffect, useRef, createRef } from 'react';
 
+import { atom, useRecoilValue } from 'recoil';
+
 import Grid from './Grid';
+import DragGrid from './DragGrid';
+
+export interface Boat {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  mouseOffsetX: number;
+  mouseOffsetY: number;
+  move: boolean;
+}
+
+export const boat = atom({
+  key: 'boat',
+  default: {
+    x: 0, 
+    y: 0, 
+    width: 6,
+    height: 1, 
+    mouseOffsetX: 0,
+    mouseOffsetY: 0,
+    move: false
+  } as Boat,
+});
 
 //import useGrid, { Grid } from './../useGrid';
 
@@ -24,6 +50,7 @@ interface GridPosition {
 const Board = () => {
   const [grid, setGrid] = useState<TileState[]>((new Array(SIZE * SIZE)).fill(TileState.Empty));
   const [tileHeight, setTileHeight] = useState<number>(50);
+  const testBoat = useRecoilValue(boat);
 
   const [position, setPosition] = useState<GridPosition>({x: 0, y: 0});
 
@@ -72,6 +99,16 @@ const Board = () => {
 
   return (
     <>
+    <div 
+      className="boat"
+      style={{
+        width: `${testBoat.width * tileHeight}px`,
+        height: `${testBoat.height * tileHeight}px`,
+        top: `${testBoat.y}px`,
+        left: `${testBoat.x}px`
+      }}
+    >myboat</div>
+
     <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
@@ -82,18 +119,8 @@ const Board = () => {
           {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile">{i + 1}</div>)}
         </div>
         <div className="grid">
-          <Grid tileSize={tileHeight} size={SIZE}></Grid>
-          {/* {grid.map((v, i) => {
-            return (
-              <div 
-                style={tileStyle}
-                className="tile"
-                key={'grid-' + i}
-              >
-              {v == TileState.Empty ? <button onClick={() => action(i)}>{v}</button> : 'x'}
-              </div>
-            )
-          })}      */}
+          {/* <Grid tileSize={tileHeight} size={SIZE}></Grid> */}
+          <DragGrid tileSize={tileHeight} size={SIZE}></DragGrid>
         </div>
       </div>
     </div>
