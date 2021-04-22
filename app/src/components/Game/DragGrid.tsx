@@ -30,7 +30,7 @@ const DragGrid = ({ size, tileSize }: Props) => {
     }
   };
 
-  const {items, grid} = useGrid(size, box);
+  const grid = useGrid(size, box);
 
   useEffect(() => {
     resize();
@@ -43,27 +43,28 @@ const DragGrid = ({ size, tileSize }: Props) => {
 
   return (
     <>
-    <div 
+    {/* <div 
       style={{
         width: `${box.width}px`,
         height: `${box.height}px`,
         top: `${box.y}px`,
-        left: `${box.x}px`
+        left: `${box.x}px`,
+        position: 'absolute',
+        border: '1px solid blue'
       }}
-      className="test--box"
     >
       asdf
-    </div>
+    </div> */}
 
     <div ref={div}>
       {grid.map((v, i) => {
         return (
           <div 
-            style={{width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v == 7 ? 'green' : 'transparent'}}
+            style={{width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v > 99 ? 'gold' : 'transparent'}}
             className="tile"
             key={'grid-' + i}
           >
-            {v}
+          {v != 0 ? v : null}
           </div>
         )
       })}

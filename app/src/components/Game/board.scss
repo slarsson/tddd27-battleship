@@ -119,16 +119,25 @@
   }
 }
 
-.test--box {
-	position: absolute;
-	border: 2px solid blue;
-}
 
 
 .boat {
+	box-sizing: border-box;
+	margin-left:-1px; // FIXA!
 	background-color: red;
 	position: absolute;
+	border:3px solid tomato;
+	opacity: 0.9;
+	cursor: move;
+	user-select: none;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
 }
+
+
 
 // .grid {
 // 	background-color: #F472B6;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 
-import { boat as boatState } from './../components/Game/Board';
+import { boat as boatStatex, boatsState } from './../components/Game/Boats';
 
 export interface Box {
   x: number;
@@ -10,103 +10,144 @@ export interface Box {
   height: number;
 }
 
-const useGrid = (size: number, area: Box) => {
-  const [items, setItems] = useState<number[]>([]);
-  const [grid, setGrid] = useState<number[]>(new Array(size * size).fill(0));
-  const [boat, setBoat] = useRecoilState(boatState);
+const clone = (items: any) => {
+  let arr = [];
+  for (let item of items) {
+    arr.push({...item});
+  }
+  return arr;
+}
 
-  const state = useRef<any>({area: area});
+const useGrid = (size: number, area: Box): number[] => {
+  const [grid, setGrid] = useState<number[]>(new Array(size * size).fill(0));
+  const [boat, setBoat] = useRecoilState(boatStatex);
+
+  const [allBoats, setAllBoats] = useRecoilState(boatsState);
+
+  const state = useRef<any>({area: area, selected: -1});
 
   useEffect(() => {
+    const b = [];
+    for (let item of allBoats) {
+      b.push({...item});
+    }
+    
     state.current = {
+      selected: state.current.selected,
       size: size,
       tileSize: area.width / size,
       area: area,
       grid: grid,
       boat: {...boat},
+      boats: clone(allBoats)
     };
   }, [size, area, grid, boat]);
 
   const mousemove = (evt: MouseEvent) => {
-    //console.log(state.current.boat);
-    if (!state.current.boat.move) {
-      return;
-    }
+    let index = state.current.selected;
+    //console.log(index);
+    if (index == -1) return;
+
+    // mut object
+    let boat = state.current.boats[index]
+
+    boat.x = evt.pageX - boat.mouseOffsetX;
+    boat.y = evt.pageY - boat.mouseOffsetY;
     
-    state.current.boat.x = evt.pageX - state.current.boat.mouseOffsetX;
-    state.current.boat.y = evt.pageY - state.current.boat.mouseOffsetY;
-    setBoat({...state.current.boat});
 
     const box = state.current.area;
-    if (evt.pageX <= box.x || evt.pageX >= (box.x + box.width)) return;
-    if (evt.pageY <= box.y || evt.pageY >= (box.y + box.height)) return;
-
-    // const tileSize = box.width / size;
-    // const col = Math.floor((evt.pageX - box.x) / tileSize);
-    // const row = Math.floor((evt.pageY - box.y) / tileSize);
-    // const index = row * size + col;
-    
+    if (evt.pageX <= box.x || evt.pageX >= (box.x + box.width) || evt.pageY <= box.y || evt.pageY >= (box.y + box.height)) {
+      // let bb = [];
+      // for (let item of state.current.boats) {
+      //   bb.push({...item});
+      // }
+      setAllBoats(clone(state.current.boats));
+      return;
+    }
 
     for (let i = 0; i < state.current.grid.length; i++) {
-      state.current.grid[i] = 0;
-    }
-
-    let row = Math.floor((evt.pageY + (0.5 * state.current.tileSize) - state.current.boat.mouseOffsetY - box.y) / state.current.tileSize);
-    let col = Math.floor((evt.pageX + (0.5 * state.current.tileSize) - state.current.boat.mouseOffsetX - box.x) / state.current.tileSize);
-
-    //console.log(col);
-
-    let start = row * state.current.size;
-    //let end = Math.min(start + (state.current.size * state.current.boat.height), size * size);
-
-    for (let i = 0; i < state.current.size; i++) {
-      if (i < row || i >= (row + state.current.boat.height)) continue;
-      for (let j = col; j < col + state.current.boat.width; j++) {
-        let idx = Math.min(state.current.size * i + j, (state.current.size * state.current.size - 1));
-        state.current.grid[idx] = 7;
+      if (state.current.grid[i] == boat.id) {
+        state.current.grid[i] = 0;
       }
     }
-    
-    //let start = row * state.current.size;
-    // let end = Math.min(start + (state.current.size * state.current.boat.height), size * size);
-    // for (let i = start; i < end; i++) {
-    //   state.current.grid[i] = 6;
-    // }
-    
 
+    let row = Math.floor((evt.pageY + (0.5 * state.current.tileSize) - boat.mouseOffsetY - box.y) / state.current.tileSize);
+    let col = Math.floor((evt.pageX + (0.5 * state.current.tileSize) - boat.mouseOffsetX - box.x) / state.current.tileSize);
 
-    //console.log(yTop);
+    if (row >= 0 && (row + boat.height) <= state.current.size && col >= 0 && (col + boat.width) <= state.current.size) {
+      
+      let collision = false;
+      let start = row * state.current.size;
+      Test:
+      for (let i = 0; i < state.current.size; i++) {
+        if (i < row || i >= (row + boat.height)) continue;
+        for (let j = col; j < col + boat.width; j++) {
+          let idx = Math.min(state.current.size * i + j, (state.current.size * state.current.size - 1));
+          if (state.current.grid[idx] != 0) {
+            collision = true;
+            break Test;
+          }
+          state.current.grid[idx] = boat.id;
+        }
+      }
 
-    // console.log(yCenter);
+      if (collision) {
+        for (let i = 0; i < state.current.grid.length; i++) {
+          if (state.current.grid[i] == boat.id) {
+            state.current.grid[i] = 0;
+          }
+          boat.targetX = state.current.boat.originX;
+          boat.targetY = state.current.boat.originY;
+        }
+      } else {        
+        boat.targetX = state.current.area.x + (col * state.current.tileSize);
+        boat.targetY = state.current.area.y + (row * state.current.tileSize);
+      }
+    } else {
+      boat.targetX = state.current.boat.originX;
+      boat.targetY = state.current.boat.originY;
+    }
 
-    // state.current.grid[index] = -1;
-    setGrid([...state.current.grid]);
-
-    
+    setGrid([...state.current.grid]);  
+    setAllBoats(clone(state.current.boats));
   }; 
 
   const mousedown = (evt: MouseEvent) => {
     let size = state.current.tileSize;
-    let boat = state.current.boat;
+    for (let i = 0; i < state.current.boats.length; i++) {
+      let boat = state.current.boats[i];
+      if (evt.pageX < boat.x || evt.pageX > (boat.x + size * boat.width)) continue;
+      if (evt.pageY < boat.y || evt.pageY > (boat.y + size * boat.height)) continue;
+      state.current.selected = i;
+      break;
+    }
 
-    if (evt.pageX < boat.x || evt.pageX > (boat.x + size * boat.width)) return;
-    if (evt.pageY < boat.y || evt.pageY > (boat.y + size * boat.height)) return;
-
-    console.log('myboat');
-    //console.log(boat);
-
-
-    boat.move = true;
-    boat.mouseOffsetX = evt.pageX - boat.x;
-    boat.mouseOffsetY = evt.pageY - boat.y;
-    setBoat({...boat})
-    //console.log(state.current.boat);
+    let index = state.current.selected; 
+    if (index == -1) return;
+    
+    state.current.boats[index].move = true;
+    state.current.boats[index].mouseOffsetX = evt.pageX - state.current.boats[index].x;
+    state.current.boats[index].mouseOffsetY = evt.pageY - state.current.boats[index].y;
+    state.current.boats[index].transition = '';
+    
+    setAllBoats(clone(state.current.boats));
   };
 
   const mouseup = () => {
-    state.current.boat.move = false;
-    setBoat({...state.current.boat})
-    // console.log(state.current.boat);
+    let index = state.current.selected;
+    if (!state.current.boats[index]) {
+      state.current.selected = -1;
+      return;
+    }
+    
+    state.current.boats[index].move = false;
+    state.current.boats[index].x = state.current.boats[index].targetX;
+    state.current.boats[index].y = state.current.boats[index].targetY;
+    state.current.boats[index].transition = 'left 0.1s ease-out, top 0.1s ease-out';
+    
+    state.current.selected = -1;
+
+    setAllBoats(clone(state.current.boats));
   };
 
   useEffect(() => {
@@ -121,7 +162,7 @@ const useGrid = (size: number, area: Box) => {
     }
   }, []);
 
-  return { boats: items, grid: grid };
+  return grid;
 };
 
 export default useGrid;
