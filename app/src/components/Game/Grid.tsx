@@ -40,7 +40,6 @@ const Grid = ({ size, tileSize }: Props) => {
 
   useEffect(() => {
     grid[32] = TileState.Hit;
-
     grid[44] = TileState.Miss;
     setGrid([...grid]);
   }, []);

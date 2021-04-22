@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, createRef } from 'react';
-
+import React, { useState, useEffect, useRef } from 'react';
 import useGrid, { Box } from './../../hooks/useGrid';
 
 interface Props {
@@ -7,17 +6,8 @@ interface Props {
   tileSize: number;
 }
 
-// interface Box {
-//   x: number;
-//   y: number;
-//   width: number;
-//   height: number;
-// }
-
 const DragGrid = ({ size, tileSize }: Props) => {
-  //const [grid, setGrid] = useState<number[]>((new Array(size * size)).fill(-1));
   const [box, setBox] = useState<Box>({x: 0, y: 0, width: 0, height: 0});
-
   const div = useRef<HTMLDivElement | null>(null);
   const resize = () => {
     if (div.current) {
@@ -30,32 +20,17 @@ const DragGrid = ({ size, tileSize }: Props) => {
     }
   };
 
-  const grid = useGrid(size, box);
-
-  useEffect(() => {
-    resize();
-  }, [tileSize]);
+  
+  useEffect(() => resize(), [tileSize]);
 
   useEffect(() => {
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
   }, []);
 
-  return (
-    <>
-    {/* <div 
-      style={{
-        width: `${box.width}px`,
-        height: `${box.height}px`,
-        top: `${box.y}px`,
-        left: `${box.x}px`,
-        position: 'absolute',
-        border: '1px solid blue'
-      }}
-    >
-      asdf
-    </div> */}
+  const grid = useGrid(size, box);
 
+  return (
     <div ref={div}>
       {grid.map((v, i) => {
         return (
@@ -64,12 +39,11 @@ const DragGrid = ({ size, tileSize }: Props) => {
             className="tile"
             key={'grid-' + i}
           >
-          {v != 0 ? v : null}
+          {/* {v != 0 ? v : null} */}
           </div>
         )
       })}
     </div>
-    </>
   );
 }
 

@@ -1,98 +1,46 @@
-import React, { useState, useEffect, useRef, createRef } from 'react';
-
-import { boat } from './Boats';
-
-import { atom, useRecoilState, useRecoilValue } from 'recoil';
-
+import React, { useEffect, useRef } from 'react';
+import { useRecoilState } from 'recoil';
 import Grid from './Grid';
-import DragGrid from './DragGrid';
 
-export const tileSizeState = atom({
-  key: 'tileSizeState',
-  default: 0 as number
-});
+import DragGrid from './DragGrid';
+import { tileSizeState } from './state';
 
 import './board.scss';
+
+enum GridType {
+  Drag,
+  Click
+}
+
+interface Props {
+  type: GridType;
+}
 
 const SIZE = 10;
 const MAX_TILE_WIDTH = 50;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
-enum TileState {
-  Empty,
-  Hit,
-  Miss
-}
-
-interface GridPosition {
-  x: number;
-  y: number;
-}
-
-export enum GridType {
-  Drag,
-  Click
-}
-interface Props {
-  type: GridType;
-}
-
 const Board = ({ type }: Props) => {
-  const [grid, setGrid] = useState<TileState[]>((new Array(SIZE * SIZE)).fill(TileState.Empty));
-  const [tileHeight, setTileHeight] = useState<number>(50);
-  const testBoat = useRecoilValue(boat);
-
-  const [tileSize, setTileSize] = useRecoilState(tileSizeState);
-
-  const [position, setPosition] = useState<GridPosition>({x: 0, y: 0});
-
+  const [tileSize, setTileSize] = useRecoilState<number>(tileSizeState);
+  
   const div = useRef<HTMLDivElement | null>(null);
-
   const observer = useRef(
     new ResizeObserver(() => {
       if (div.current) {
-        console.log(div.current.offsetLeft);
-
-        let size = Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH);
-        
-        
-        setPosition({
-          x: div.current.offsetLeft,
-          y: div.current.offsetTop
-        });
-        
-        setTileSize(size);
-
-        setTileHeight(size);
-        //setTileHeight(Math.min(size, 50));
+        setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
       }
     })
   );
 
-  const action = (id: number) => {
-    console.log();
-    grid[id] = 1;
-    setGrid([...grid]);
-    console.log(id);
-  }
-
-
   useEffect(() => {
     if (div.current) {
-      console.log('wtf???')
       observer.current.observe(div.current)
     }
-
-    // return () => {
-    //   observer.current.unobserve()
-    // }
   }, []);
 
-
-  const tileStyle = {width: `${tileHeight}px`, height: `${tileHeight}px`};
+  const tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
 
   return (
-    <>
     <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
@@ -103,13 +51,15 @@ const Board = ({ type }: Props) => {
           {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'left-' + i}>{i + 1}</div>)}
         </div>
         <div className="grid">
-          {type == GridType.Click ? <Grid tileSize={tileHeight} size={SIZE}></Grid> : null}
-          {type == GridType.Drag ? <DragGrid tileSize={tileHeight} size={SIZE}></DragGrid> : null }
+          {type == GridType.Click ? <Grid tileSize={tileSize} size={SIZE}></Grid> : null}
+          {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
         </div>
       </div>
     </div>
-    </>
   );
 }
 
 export default Board;
+export {
+  GridType
+}
