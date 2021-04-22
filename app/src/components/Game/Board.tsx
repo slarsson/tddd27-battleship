@@ -12,37 +12,6 @@ export const tileSizeState = atom({
   default: 0 as number
 });
 
-// export interface Boat {
-//   x: number;
-//   y: number;
-//   targetX: number;
-//   targetY: number;
-//   width: number;
-//   height: number;
-//   mouseOffsetX: number;
-//   mouseOffsetY: number;
-//   move: boolean;
-//   transition: string;
-// }
-
-// export const boat = atom({
-//   key: 'boat',
-//   default: {
-//     x: 0, 
-//     y: 0,
-//     targetX: 0,
-//     targetY: 0,
-//     width: 5,
-//     height: 1, 
-//     mouseOffsetX: 0,
-//     mouseOffsetY: 0,
-//     move: false,
-//     transition: ''
-//   } as Boat,
-// });
-
-//import useGrid, { Grid } from './../useGrid';
-
 import './board.scss';
 
 const SIZE = 10;
@@ -93,7 +62,7 @@ const Board = ({ type }: Props) => {
         });
         
         setTileSize(size);
-        
+
         setTileHeight(size);
         //setTileHeight(Math.min(size, 50));
       }
@@ -124,25 +93,14 @@ const Board = ({ type }: Props) => {
 
   return (
     <>
-    {/* <div 
-      className="boat"
-      style={{
-        width: `${testBoat.width * tileHeight}px`,
-        height: `${testBoat.height * tileHeight}px`,
-        top: `${testBoat.y}px`,
-        left: `${testBoat.x}px`,
-        transition: testBoat.transition
-      }}
-    >myboat</div> */}
-
     <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
-        {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile">{alpha[i]}</div>)}
+        {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'top-' + i}>{alpha[i]}</div>)}
       </div>
       <div className="grid-container">
         <div className="board-header">
-          {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile">{i + 1}</div>)}
+          {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'left-' + i}>{i + 1}</div>)}
         </div>
         <div className="grid">
           {type == GridType.Click ? <Grid tileSize={tileHeight} size={SIZE}></Grid> : null}

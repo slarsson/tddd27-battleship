@@ -50,61 +50,9 @@ const Boats = () => {
 
   const allBoats = useRecoilValue(boatsState);
 
-  const houseDiv = useRef<HTMLDivElement | null>(null);
-
-  const hasMounted = useRef<boolean>(false);
-
-  useEffect(() => {
-    hasMounted.current = true;
-
-    const b = {...testBoat};
-
-    if (!houseDiv.current) return;
-
-    console.log('top:', houseDiv.current.offsetTop);
-
-    // let element = houseDiv.current;
-    // while (element) {
-
-    // }
-
-    b.originX = houseDiv.current.offsetLeft;
-    b.originY = window.pageYOffset + houseDiv.current.getBoundingClientRect().top;
-
-    b.x = b.originX;
-    b.y = b.originY;
-    
-    setTestBoat(b);
-
-  }, []);
-
-  useEffect(() => {
-    //console.log('update..', tileSize);
-    //console.log(allBoats);
-  }, [allBoats]);
-
-  useEffect(() => {
-    console.log('wtf..', tileSize);
-    console.log(allBoats);
-  }, [tileSize])
-
-  //console.log('size:', allBoats.length, tileSize, allBoats[0]);
-
   return (
     <>
-    <div className="wtf" style={{top: 0, left: 0, position: 'absolute'}}>
-      {/* <div 
-        className="boat"
-        style={{
-          width: `${testBoat.width * tileSize}px`,
-          height: `${testBoat.height * tileSize}px`,
-          top: `${testBoat.y}px`,
-          left: `${testBoat.x}px`,
-          transition: testBoat.transition
-        }}
-      >{testBoat.x} - {testBoat.y}</div> */}
-
-
+    <div style={{top: 0, left: 0, position: 'absolute'}}>
       {allBoats.map((b, i) => {
         return (<div 
           key={'boatz' + i}

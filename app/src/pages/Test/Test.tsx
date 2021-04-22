@@ -64,7 +64,7 @@ export const Test = () => {
       x: 0, 
       y: 0,
       originX: 0,
-      originY: 0,
+      originY: 600,
       targetX: 0,
       targetY: 0,
       width: 4,
@@ -79,18 +79,27 @@ export const Test = () => {
     setAllBoats([...b]);
   }, []);
 
+  // return (
+  //   <>
+  //   <div style={{display: 'flex'}}>
+  //     TEST ROUTE
+  //     <Board type={GridType.Drag}></Board>
+
+  //     <div style={{marginLeft: '50px'}}></div>
+
+  //     <Board type={GridType.Click}></Board>
+  //   </div>
+  //   <Boats></Boats>
+  //   </>
+  // )
+
+
   return (
-    <>
-    <div style={{display: 'flex'}}>
-      TEST ROUTE
+    <div>
       <Board type={GridType.Drag}></Board>
 
-      <div style={{marginLeft: '50px'}}></div>
-
-      <Board type={GridType.Click}></Board>
+      <Boats></Boats>
     </div>
-    <Boats></Boats>
-    </>
   )
 }
 
