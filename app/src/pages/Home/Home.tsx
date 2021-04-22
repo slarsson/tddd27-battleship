@@ -1,18 +1,87 @@
 import React, { useState, useEffect } from "react";
 import "./home.scss";
 import battleship from "../../assets/battleship.png";
+import { Button, Input } from "../../components";
+import { useHistory } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { gameStates } from "../../atoms/game";
 
 export const Home = () => {
   const [playerName, setPlayerName] = useState("");
   const [gameId, setGameId] = useState("");
   const [createToggler, setCreateToggler] = useState(true);
   const [joinToggler, setJoinToggler] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [globalGameState, setGlobalGameState] = useRecoilState(gameStates); //TODO: läs in från localstorage för att plocka redan existerande
+  let history = useHistory();
+  let url = "http://localhost:3000";
+  
+  useEffect(() => {}, [playerName, gameId]);
 
-  useEffect(() => {
-  }, [playerName, gameId]);
+  const handleCreate = async () => {
+    setLoading(true);
 
-  const handleCreate = () => {};
-  const handleJoin = () => {};
+    // TODO: check playerName
+    if (!playerName) {
+      return;
+    }
+
+    try {
+      let res = await fetch(url + "/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: playerName,
+        }),
+      });
+      let data = await res.json();
+
+      let a = { ...globalGameState };
+      a[data.gameId] = { gameId: data.gameId, token: data.token };
+      setGlobalGameState(a);
+
+      // TODO: skriv till localstorage
+      setLoading(false);
+      history.push(data.gameId);
+    } catch (e) {
+      setLoading(false);
+      console.log("err...", e);
+    }
+  };
+
+  const handleJoin = async () => {
+
+    // TODO: Check gameId
+    setLoading(true);
+    console.log("gameid", gameId);
+
+    try {
+      let res = await fetch(url + "/available", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameId: gameId,
+        }),
+      });
+      let data = await res.json();
+
+      // Game exists
+      if (data.ok) {
+        setLoading(false);
+        history.push(gameId);
+      } else {
+        setLoading(false);
+        alert("No game asdasd");
+      }
+    } catch (e) {
+      console.log("err...", e);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container">
@@ -24,63 +93,25 @@ export const Home = () => {
       <div className="button-container">
         <form className="form">
           {createToggler ? (
-            <button
-              className="form-button"
-              onClick={() => setCreateToggler(!createToggler)}
-            >
-              Create game
-            </button>
-            ) : (
-            <div className="input-container">
-              <input
-                className="input-field"
-                placeholder="Player name"
-                onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                  setPlayerName(e.currentTarget.value);
-                }}
-              ></input>
-              <button
-                className="submit-button"
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleCreate();
-                }}
-              >
-                Create
-              </button>
-            </div>
-          )} 
+            <Button
+              text={"Create Game"}
+              setToggler={setCreateToggler}
+              toggler={createToggler}
+            />
+          ) : (
+            <Input setToggler={setCreateToggler} placeHolder={"Player name"} setInputValue={setPlayerName} buttonText={"Create"} loading={loading} onSubmit={handleCreate} />
+          )}
         </form>
 
         <form className="form">
           {joinToggler ? (
-            <button
-              className="form-button"
-              onClick={() => setJoinToggler(!joinToggler)}
-            >
-              Join game
-            </button>
+            <Button
+              text={"Join Game"}
+              setToggler={setJoinToggler}
+              toggler={joinToggler}
+            />
           ) : (
-            <div className="input-container">
-              <input
-                className="input-field"
-                placeholder="Game id"
-                onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                  setGameId(e.currentTarget.value);
-                }}
-              ></input>
-              <button
-                className="submit-button"
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleJoin();
-                }}
-              >
-                Join
-              </button>
-            </div>
+            <Input setToggler={setJoinToggler} placeHolder={"Game id"} setInputValue={setGameId} buttonText={"Join"} loading={loading} onSubmit={handleJoin} />
           )}
         </form>
       </div>

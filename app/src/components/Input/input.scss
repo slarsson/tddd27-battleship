@@ -1,0 +1,42 @@
+.input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px 0 15px;
+    width: 400px;
+    height: 40px;
+    border-radius: 6em;
+  
+    border: 0;
+    outline: 0;
+    border-radius: 5vh; 
+    box-shadow: 0 0.125em 0.3125em rgba(#333, 0.3);
+  }
+  
+  .input-field {
+    height: 100%;
+    width: 100%;
+    padding: 0 5px;
+    outline: 0;
+    border: 0;
+    font-weight: 500;
+  }
+  
+  .submit-button {
+    width: 80px;
+    height: 30px;
+    border-radius: 6em;
+    outline: 0;
+    border: 0;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    &:hover {
+        transform: scale(1.05);
+    }
+  }
+  
