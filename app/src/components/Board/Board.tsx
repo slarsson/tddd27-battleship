@@ -17,7 +17,7 @@ interface Props {
 }
 
 const SIZE = 10;
-const MAX_TILE_WIDTH = 50;
+const MAX_TILE_WIDTH = 60;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
 const Board = ({ type }: Props) => {

@@ -34,7 +34,8 @@ const Boats = () => {
               height: `${b.height * tileSize}px`,
               top: `${b.y}px`,
               left: `${b.x}px`,
-              transition: b.transition
+              transition: b.transition,
+              position: 'absolute'
             }}
           >
             {b.x} - {b.y}

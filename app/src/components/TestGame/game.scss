@@ -1,0 +1,51 @@
+.game-container {
+    $breakpoint: 600px;
+
+    
+
+    margin: auto; // REMOVE!
+    //border: 2px solid red; // REMOVE
+    
+    //background-color: red;
+
+    max-width: 1000px;
+    padding: 20px;
+
+    .place-boats-container {
+        margin-top: 20px;
+        display: flex;
+        
+        @media screen and (max-width: $breakpoint) {
+            flex-direction: column;
+            //padding: 100px;
+          }
+
+        //background-color: blue;
+    }
+
+    .board-container {
+        width: 60%;
+        margin-right: 20px;
+
+        @media screen and (max-width: $breakpoint) {
+            width: 100%;
+            //padding: 100px;
+          }
+
+        //margin: 20px;
+        background-color: yellow;
+    }
+
+    .boats-container {
+        width: 40%;
+        padding: 20px;
+
+        @media screen and (max-width: $breakpoint) {
+            width: 100%;
+            //padding: 100px;
+          }
+
+        background-color: #4B5563;
+        border: 1px solid black;
+    }
+}

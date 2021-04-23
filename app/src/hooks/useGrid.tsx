@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
-import { Boat } from './../components/Game/Boats';
-import { boatsState } from './../components/Game/state';
+import { Boat } from '../components/Board/Boats';
+import { boatsState } from '../components/Board/state';
 
 interface Box {
   x: number;
