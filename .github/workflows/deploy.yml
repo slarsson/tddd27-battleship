@@ -12,14 +12,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      # - name: Build containers
-      #   env:
-      #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      #   run: | 
-      #     docker build -t slarsson/node-test ./_test
-      #     echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-      #     docker push slarsson/node-test:latest
+      - name: Build containers
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        run: | 
+          docker build -t slarsson/tddd27 .
+          echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+          docker push slarsson/tddd27:latest
     
       - name: Build frontend
         run: |
@@ -37,17 +37,16 @@ jobs:
           rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./deploy/ root@$SSH_HOST:/root/deploy/ --delete
           rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./app/dist/ root@$SSH_HOST:/root/html/ --delete
 
-
-      # - name: Restart containers
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: root
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 22
-      #     script_stop: true
-      #     script: |
-      #       cd /root/deploy
-      #       docker-compose pull   
-      #       docker-compose up -d
-      #       docker image prune
+      - name: Restart containers
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            cd /root/deploy
+            docker-compose pull   
+            docker-compose up -d
+            docker image prune

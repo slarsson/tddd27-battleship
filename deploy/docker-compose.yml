@@ -11,6 +11,6 @@ services:
 
   api:
     container_name: api
-    image: slarsson/node-test:latest
+    image: slarsson/tddd27:latest
     ports:
       - "3000:3000"
