@@ -35,7 +35,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > mykey
           chmod 600 mykey
           rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./deploy/ root@$SSH_HOST:/root/deploy/ --delete
-          rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./app/dist root@$SSH_HOST:/root/html/ --delete
+          rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./app/dist/ root@$SSH_HOST:/root/html/ --delete
 
 
       # - name: Restart containers
