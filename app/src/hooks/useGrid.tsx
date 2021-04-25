@@ -43,7 +43,7 @@ const useGrid = (size: number, area: Box): number[] => {
       grid: grid,
       boats: clone(boats)
     };
-  }, [size, area, grid]);
+  }, [size, area, grid, boats]);
 
   const mousemove = (evt: MouseEvent) => {
     let index = state.current.selected;

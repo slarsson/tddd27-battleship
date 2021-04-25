@@ -26,18 +26,42 @@ export default function App() {
   
   return (
     <RecoilRoot>
-      <Router>
-        <Navbar 
-          navLinks={navLinks}
-        />
-        <div className="body"> 
+      <Router> 
           <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/how-to" component={HowTo} />
+            <Route exact path="/">
+              <Layout links={navLinks}>
+                <Home></Home>
+              </Layout>
+            </Route>
+            <Route exact path="/how-to">
+              <Layout links={navLinks}>
+                <HowTo></HowTo>
+              </Layout>
+            </Route>
             <Route exact path="/test" component={Test} />
           </Switch>
-        </div>
       </Router>
     </RecoilRoot>
   );
 }
+
+interface Links {
+  path: string;
+  name: string;
+}
+
+interface LayoutProps {
+  children: React.ReactNode;
+  links: Links[];
+}
+
+const Layout = ({ children, links }: LayoutProps) => {
+  return (
+    <>
+     <Navbar navLinks={links} />
+     <div className="body">
+       {children}
+     </div>
+    </>
+  );
+};

@@ -1,51 +1,96 @@
 .game-container {
     $breakpoint: 600px;
 
-    
+    background-color: #333;
+    padding: 10px;
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
 
-    margin: auto; // REMOVE!
-    //border: 2px solid red; // REMOVE
-    
-    //background-color: red;
+    .game-header {
+        display: flex;
+        justify-content: space-between;
+    }
 
-    max-width: 1000px;
-    padding: 20px;
+    .game-inner-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex: 1;
+    }
+
+    .game-wrapper {
+        min-width: 0;
+        max-width: 1000px;
+        width: 1000%;
+    }
 
     .place-boats-container {
-        margin-top: 20px;
+        margin-top: 15px;
         display: flex;
-        
+
         @media screen and (max-width: $breakpoint) {
             flex-direction: column;
-            //padding: 100px;
-          }
-
-        //background-color: blue;
+        }
     }
 
     .board-container {
         width: 60%;
         margin-right: 20px;
+        background-color: yellow;
 
         @media screen and (max-width: $breakpoint) {
             width: 100%;
-            //padding: 100px;
-          }
-
-        //margin: 20px;
-        background-color: yellow;
+        }
     }
 
     .boats-container {
         width: 40%;
         padding: 20px;
+        background-color: #4B5563;
+        border: 1px solid black;
 
         @media screen and (max-width: $breakpoint) {
             width: 100%;
-            //padding: 100px;
-          }
+            margin-top: 10px;
+        }
+    }
 
-        background-color: #4B5563;
-        border: 1px solid black;
+    .game-info {
+        font-size: 16px;
+        justify-content:space-between;
+        margin-bottom: 5px;
+
+        span {
+            font-weight: 500;
+        }
+
+        .gold {
+            color: gold;
+        }
+
+        button {
+            font-size: 20px;
+            border: 1px solid red;
+            padding: 5px;
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+    .game-shoot-container {
+        min-width: 0;
+        display: flex;
+        height: 100%;
+
+        & > div {
+            min-width: 0;
+            &:first-of-type { width: 60%; }
+            &:last-of-type { width: 40%; }
+        }
     }
 }

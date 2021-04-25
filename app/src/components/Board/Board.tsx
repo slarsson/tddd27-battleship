@@ -3,30 +3,33 @@ import { useRecoilState } from 'recoil';
 import Grid from './Grid';
 
 import DragGrid from './DragGrid';
+import ViewGrid from './ViewGrid';
 import { tileSizeState } from './state';
 
 import './board.scss';
 
 enum GridType {
   Drag,
-  Click
+  Click,
+  View
 }
 
 interface Props {
   type: GridType;
+  test?: number;
 }
 
 const SIZE = 10;
 const MAX_TILE_WIDTH = 60;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
-const Board = ({ type }: Props) => {
+const Board = ({ type, test }: Props) => {
   const [tileSize, setTileSize] = useRecoilState<number>(tileSizeState);
   
   const div = useRef<HTMLDivElement | null>(null);
   const observer = useRef(
     new ResizeObserver(() => {
-      if (div.current) {
+      if (div.current && test == undefined) {
         setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
       }
     })
@@ -38,7 +41,11 @@ const Board = ({ type }: Props) => {
     }
   }, []);
 
-  const tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
+  let tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
+
+  if (test) {
+    tileStyle = {width: `${test}px`, height: `${test}px`};
+  }
 
   return (
     <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
@@ -53,6 +60,7 @@ const Board = ({ type }: Props) => {
         <div className="grid">
           {type == GridType.Click ? <Grid tileSize={tileSize} size={SIZE}></Grid> : null}
           {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
+          {type == GridType.View ? <ViewGrid tileSize={test ? test : 0} size={SIZE}></ViewGrid> : null }
         </div>
       </div>
     </div>

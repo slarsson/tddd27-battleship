@@ -8,7 +8,6 @@ import { boatsState } from '../../components/Board/state';
 import Board, { GridType } from '../../components/Board/Board';
 import { useRecoilState } from "recoil";
 
-import './test.scss';
 
 import Game from '../../components/TestGame/Game';
 
