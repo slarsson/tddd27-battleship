@@ -1,7 +1,9 @@
 import React from "react";
 import "./index.scss"
-import { Home, HowTo } from './pages'
+import { Home, HowTo, Test } from './pages'
 import { Navbar } from './components';
+
+import { RecoilRoot } from 'recoil';
 
 import {
   BrowserRouter as Router,
@@ -23,16 +25,43 @@ export default function App() {
   ]
   
   return (
-    <Router>
-      <Navbar 
-        navLinks={navLinks}
-      />
-      <div className="body"> 
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/how-to" component={HowTo} />
-        </Switch>
-      </div>
-    </Router>
+    <RecoilRoot>
+      <Router> 
+          <Switch>
+            <Route exact path="/">
+              <Layout links={navLinks}>
+                <Home></Home>
+              </Layout>
+            </Route>
+            <Route exact path="/how-to">
+              <Layout links={navLinks}>
+                <HowTo></HowTo>
+              </Layout>
+            </Route>
+            <Route exact path="/test" component={Test} />
+          </Switch>
+      </Router>
+    </RecoilRoot>
   );
 }
+
+interface Links {
+  path: string;
+  name: string;
+}
+
+interface LayoutProps {
+  children: React.ReactNode;
+  links: Links[];
+}
+
+const Layout = ({ children, links }: LayoutProps) => {
+  return (
+    <>
+     <Navbar navLinks={links} />
+     <div className="body">
+       {children}
+     </div>
+    </>
+  );
+};
