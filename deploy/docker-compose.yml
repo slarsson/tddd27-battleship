@@ -5,6 +5,7 @@ services:
     image: nginx:latest
     volumes:
         - "./nginx.conf:/etc/nginx/nginx.conf"
+        - "/root/html:/home/html"
     ports:
       - "80:80"
 
