@@ -12,16 +12,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Build containers
+      - name: Build backend
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: | 
-          docker build -t slarsson/node-test ./_test
+          docker build -t slarsson/tddd27 .
           echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-          docker push slarsson/node-test:latest
+          docker push slarsson/tddd27:latest
     
-      - name: Sync setup
+      - name: Build frontend
+        run: |
+          cd app
+          npm ci
+          npm run build
+
+      - name: Sync setup + frontend
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.HOST }}
@@ -29,6 +35,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > mykey
           chmod 600 mykey
           rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./deploy/ root@$SSH_HOST:/root/deploy/ --delete
+          rsync -vah -e 'ssh -i mykey -o StrictHostKeyChecking=no' ./app/dist/ root@$SSH_HOST:/root/html/ --delete
 
       - name: Restart containers
         uses: appleboy/ssh-action@master

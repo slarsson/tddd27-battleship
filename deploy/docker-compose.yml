@@ -5,11 +5,12 @@ services:
     image: nginx:latest
     volumes:
         - "./nginx.conf:/etc/nginx/nginx.conf"
+        - "/root/html:/home/html"
     ports:
       - "80:80"
 
   api:
     container_name: api
-    image: slarsson/node-test:latest
+    image: slarsson/tddd27:latest
     ports:
       - "3000:3000"
