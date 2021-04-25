@@ -8,7 +8,7 @@ The classic game Battleship (https://en.wikipedia.org/wiki/Battleship_(game)). A
 ## Technical specifications
 
 ### Frontend 
-React with Recoil.js for state mangement
+React with Recoil.js for state management
 
 ### Backend 
 JavaScript/node.js with express + WebSocket 
