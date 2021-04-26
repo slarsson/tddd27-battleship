@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./index.scss"
 import { Home, HowTo, Test } from './pages'
 import { Navbar } from './components';
@@ -12,6 +12,12 @@ import {
 } from 'react-router-dom';
 
 export default function App() {
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+			document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);	
+		});
+  }, []);
+
 
   const navLinks = [
     {

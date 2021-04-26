@@ -12,8 +12,7 @@ html {
 }
 
 body {
-  min-height: 100%;
-  //overflow: hidden;
+  min-height:calc(var(--vh, 1vh) * 100);
 }
 
 .body { 
