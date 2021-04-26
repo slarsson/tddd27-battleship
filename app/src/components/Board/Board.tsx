@@ -16,55 +16,46 @@ enum GridType {
 
 interface Props {
   type: GridType;
-  test?: number;
+  maxWidth?: number;
 }
 
 const SIZE = 10;
-const MAX_TILE_WIDTH = 60;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
-const Board = ({ type, test }: Props) => {
+const sizeFromWindowHeight = () => {
   
   
-  const [tileSize, setTileSize] = useState<number>((window.innerHeight * 0.4) / (SIZE + 1));
+  console.log(window.innerWidth);
   
-  // useEffect(() => {
-  //   r_setTileSize(tileSize);
-  // }, [tileSize]);
+  return Math.trunc((window.innerHeight * 0.4) / (SIZE + 1));
+};
+
+const sizeFromWidth = (w: number) => {
+  return Math.trunc(Math.min(w, 600) / (SIZE + 1));
+};
+
+const Board = ({ type, maxWidth }: Props) => {
+  const [tileSize, setTileSize] = useState<number>(maxWidth == null ? sizeFromWindowHeight() : sizeFromWidth(maxWidth));
 
   const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState);
   
   const resize = () => {
-    
-    //console.log('reisze shiet')
-    
-    if (test != undefined) {
-      console.log('set to test', test);
-      setTileSize(test);
-      return;
+    let size: number;
+    if (maxWidth != undefined) {
+      size = sizeFromWidth(maxWidth);
+    } else {
+      size = sizeFromWindowHeight();
     }
-
-    const s = (window.innerHeight * 0.4) / (SIZE + 1);
-    console.log(s);
-    r_setTileSize(s);
-    setTileSize(s);
+    r_setTileSize(size);
+    setTileSize(size);
   };
 
-  useEffect(() => {
-    console.log('test update..', test);
-    resize();
-  }, [test]);
-
-  // useEffect(() => {
-  //   resize();
-  //   window.addEventListener('resize', () => resize()); // TODO: how to remove this?
-  //   return () => window.removeEventListener('resize', () => resize());
-  // }, []);
+  useEffect(() => resize(), [maxWidth]);
 
   let tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
 
   return (
-    <div className="board" style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`, width: `${tileSize * 11 + 1}px`}}>
+    <div className="board" style={{width: `${tileSize * 11 + 1}px`}}>
       {/* <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}> */}
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>

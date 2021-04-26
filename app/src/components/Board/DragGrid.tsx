@@ -36,23 +36,21 @@ const DragGrid = ({ size, tileSize }: Props) => {
 
 
   useEffect(() => {
-    console.log('wtf??');
     r_setTileSize(tileSize);
     resize();
   }, [tileSize]);
 
+  // TODO: fix this!!!
   useEffect(() => {
     setTimeout(() => {
       resize();
-    }, 100);
+    }, 200);
   }, []);;
-
-  //resize();
 
   const grid = useGrid(size, box);
 
   return (
-    <div ref={div} style={{outline: '1px solid gold'}}>
+    <div ref={div} style={{outline: 'none'}}>
       {grid.map((v, i) => {
         return (
           <div 
