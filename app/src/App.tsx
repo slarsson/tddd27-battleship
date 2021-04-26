@@ -13,8 +13,10 @@ import {
 
 export default function App() {
   useEffect(() => {
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);	
     window.addEventListener('resize', () => {
-			document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);	
+			//alert('h0ra?');
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);	
 		});
   }, []);
 
