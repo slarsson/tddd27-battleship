@@ -30,7 +30,11 @@ const Board = ({ type, test }: Props) => {
   const observer = useRef(
     new ResizeObserver(() => {
       if (div.current && test == undefined) {
-        setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
+        
+        console.log(window.innerHeight);
+        
+        setTileSize((window.innerHeight * 0.4) / 11);
+        //setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
       }
     })
   );
@@ -48,7 +52,8 @@ const Board = ({ type, test }: Props) => {
   }
 
   return (
-    <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
+    <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`, width: `${tileSize * 11 + 1}px`}}>
+      {/* <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}> */}
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
         {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'top-' + i}>{alpha[i]}</div>)}

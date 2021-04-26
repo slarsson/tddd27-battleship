@@ -45,7 +45,7 @@ const useGrid = (size: number, area: Box): number[] => {
     };
   }, [size, area, grid, boats]);
 
-  const mousemove = (evt: MouseEvent) => {
+  const mousemove = (evt: any) => {
     let index = state.current.selected;
     if (index == -1) return;
 
@@ -115,7 +115,7 @@ const useGrid = (size: number, area: Box): number[] => {
     setBoats(clone(state.current.boats));
   }; 
 
-  const mousedown = (evt: MouseEvent) => {
+  const mousedown = (evt: any) => {
     let size = state.current.tileSize;
     
     // find selected boat
@@ -127,9 +127,13 @@ const useGrid = (size: number, area: Box): number[] => {
       break;
     }
 
+    console.log('found', state.current.selected);
+
     let index = state.current.selected; 
     if (index == -1) return;
     
+    document.body.style.overflow = 'hidden';
+
     state.current.boats[index].move = true;
     state.current.boats[index].mouseOffsetX = evt.pageX - state.current.boats[index].x;
     state.current.boats[index].mouseOffsetY = evt.pageY - state.current.boats[index].y;
@@ -159,6 +163,45 @@ const useGrid = (size: number, area: Box): number[] => {
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mousedown', mousedown);
     window.addEventListener('mouseup', mouseup);
+
+    window.addEventListener('touchmove', (evt) => {
+      
+
+      //document.body.style.overflow = 'hidden';
+      //console.log(document.body);
+      
+      let test = {
+        pageX: evt.touches[0].clientX,
+        pageY: evt.touches[0].clientY
+      };
+
+      //console.log(test);
+
+      mousemove(test);
+    
+      //console.log(evt.touches[0].screenX);
+    });
+
+    window.addEventListener('touchend', () => {
+      document.body.style.overflow = 'scroll';
+
+      mouseup();
+      console.log('end');
+    });
+
+    window.addEventListener('touchstart', (evt) => {
+      //document.body.style.overflow = 'hidden';
+
+      console.log('start?');
+      
+      let test = {
+        pageX: evt.touches[0].clientX,
+        pageY: evt.touches[0].clientY
+      };
+      mousedown(test);
+    
+      //console.log(evt.touches[0].screenX);
+    });
 
     return () => {
       window.removeEventListener('mousemove', mousemove);

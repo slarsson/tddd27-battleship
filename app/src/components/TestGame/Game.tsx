@@ -22,7 +22,11 @@ const Game = () => {
 
   const tempShow = () => {
     setShowModal(!showModal);
-  }
+  };
+
+  const fullscreen = () => {
+    document.body.requestFullscreen();
+  };
 
   return (
     <>
@@ -37,6 +41,7 @@ const Game = () => {
         <h1>BATTLESHIP</h1>
         <button onClick={() => tempSwap()}>switch</button>
         <button onClick={() => tempShow()}>popup</button>
+        <button onClick={() => fullscreen()}>fs</button>
         <button>QUIT GAME</button>
       </div>
 

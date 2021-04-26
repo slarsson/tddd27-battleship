@@ -37,9 +37,10 @@
 
 
 	.tile {
+		box-sizing: border-box;
 		border-right: var(--grid-border-size) solid var(--grid-border-color);
 		border-bottom: var(--grid-border-size) solid var(--grid-border-color);
-		display: flex;
+		//display: flex;
 		align-items: center;
 		justify-content: center;
 

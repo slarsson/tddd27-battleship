@@ -38,7 +38,10 @@
     .board-container {
         width: 60%;
         margin-right: 20px;
-        background-color: yellow;
+        //background-color: yellow;
+
+        display: flex;
+        justify-content: space-around;
 
         @media screen and (max-width: $breakpoint) {
             width: 100%;
