@@ -25,7 +25,9 @@ const Game = () => {
   };
 
   const fullscreen = () => {
-    document.body.requestFullscreen();
+    //document.body.requestFullscreen();
+    
+    document.body.webkitRequestFullscreen();
   };
 
   return (
