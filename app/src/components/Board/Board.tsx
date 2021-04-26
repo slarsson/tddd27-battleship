@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Grid from './Grid';
 
@@ -24,35 +24,47 @@ const MAX_TILE_WIDTH = 60;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
 const Board = ({ type, test }: Props) => {
-  const [tileSize, setTileSize] = useRecoilState<number>(tileSizeState);
   
-  const div = useRef<HTMLDivElement | null>(null);
-  const observer = useRef(
-    new ResizeObserver(() => {
-      if (div.current && test == undefined) {
-        
-        console.log(window.innerHeight);
-        
-        setTileSize((window.innerHeight * 0.4) / 11);
-        //setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
-      }
-    })
-  );
+  
+  const [tileSize, setTileSize] = useState<number>((window.innerHeight * 0.4) / (SIZE + 1));
+  
+  // useEffect(() => {
+  //   r_setTileSize(tileSize);
+  // }, [tileSize]);
+
+  const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState);
+  
+  const resize = () => {
+    
+    //console.log('reisze shiet')
+    
+    if (test != undefined) {
+      console.log('set to test', test);
+      setTileSize(test);
+      return;
+    }
+
+    const s = (window.innerHeight * 0.4) / (SIZE + 1);
+    console.log(s);
+    r_setTileSize(s);
+    setTileSize(s);
+  };
 
   useEffect(() => {
-    if (div.current) {
-      observer.current.observe(div.current)
-    }
-  }, []);
+    console.log('test update..', test);
+    resize();
+  }, [test]);
+
+  // useEffect(() => {
+  //   resize();
+  //   window.addEventListener('resize', () => resize()); // TODO: how to remove this?
+  //   return () => window.removeEventListener('resize', () => resize());
+  // }, []);
 
   let tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
 
-  if (test) {
-    tileStyle = {width: `${test}px`, height: `${test}px`};
-  }
-
   return (
-    <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`, width: `${tileSize * 11 + 1}px`}}>
+    <div className="board" style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`, width: `${tileSize * 11 + 1}px`}}>
       {/* <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}> */}
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
@@ -65,7 +77,7 @@ const Board = ({ type, test }: Props) => {
         <div className="grid">
           {type == GridType.Click ? <Grid tileSize={tileSize} size={SIZE}></Grid> : null}
           {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
-          {type == GridType.View ? <ViewGrid tileSize={test ? test : 0} size={SIZE}></ViewGrid> : null }
+          {type == GridType.View ? <ViewGrid tileSize={tileSize} size={SIZE}></ViewGrid> : null }
         </div>
       </div>
     </div>

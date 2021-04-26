@@ -26,7 +26,7 @@ const Game = () => {
 
   const fullscreen = () => {
     //document.body.requestFullscreen();
-    
+
     // @ts-ignore
     document.body.webkitRequestFullscreen();
   };
@@ -51,11 +51,13 @@ const Game = () => {
       <div className="game-inner-container">
         <div className="game-wrapper">
           <div className="game-info">
-            <p><span>Player1</span> vs <span>Player2</span></p>
+            
+            jockieboi vs alex_ceesay 
+            {/* <p><span>Player1</span> <div>0 - 0</div> <span>Player2</span></p> */}
           </div>
-          <div className="game-info">
+          {/* <div className="game-info">
             <p><span>Score:</span> 0 - 0</p>
-          </div>
+          </div> */}
           <div className="game-info">
             <p><span className="gold">Status:</span> TODO</p>
           </div>
@@ -75,11 +77,16 @@ const PlaceBoats = () => {
   const boatHouse = useRef<HTMLDivElement | null>(null);
 
   const boatStuff = () => {
+    
+    
+    
     if (!boatHouse.current) return;  
     
     let b: Boat[] = [];
-    let startX = boatHouse.current.offsetLeft;
+    let startX = boatHouse.current.getBoundingClientRect().left;
     let startY = boatHouse.current.getBoundingClientRect().top; // ADD SCROLL?
+
+    console.log('ggwp', startX);
 
     for (let i = 0; i < 5; i++) {
       let w = Math.ceil(Math.random() * 4) + 1;
@@ -142,7 +149,9 @@ const PlaceBoats = () => {
           <div 
             ref={boatHouse}
             style={{
-              minHeight: `${tileSize * 5}px`
+              outline: '1px solid red',
+              width: `${tileSize * 5}px`,
+              height: `${tileSize * 5}px`
             }}
           ></div>
         </div>
@@ -152,13 +161,29 @@ const PlaceBoats = () => {
 };
 
 const ShootBoats = () => {
+  const div = useRef<HTMLDivElement | null>(null);
+  
+  const [tileSize, setTileSize] = useState<number>(20);
+
+  const resize = () => {
+    if (div.current) {
+      setTileSize((div.current.clientWidth - 100) / 22);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', resize); // TODO: how to remove this?
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+
   return (
-    <div className="game-shoot-container">
+    <div className="game-shoot-container" ref={div}>
       <div>
-        <Board type={GridType.Click}></Board>
+        <Board type={GridType.Click} test={tileSize}></Board>
       </div>
       <div>
-        <Board type={GridType.View} test={10}></Board>
+        <Board type={GridType.View} test={tileSize}></Board>
       </div>
     </div>
   );

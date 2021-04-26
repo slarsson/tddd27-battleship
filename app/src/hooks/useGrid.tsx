@@ -19,6 +19,11 @@ interface State {
   boats: Boat[];
 }
 
+interface MoveEvent {
+  pageX: number;
+  pageY: number;
+}
+
 const clone = (items: any) => {
   let arr = [];
   for (let item of items) {
@@ -43,11 +48,15 @@ const useGrid = (size: number, area: Box): number[] => {
       grid: grid,
       boats: clone(boats)
     };
+    
+    //console.log(area.x);
   }, [size, area, grid, boats]);
 
-  const mousemove = (evt: any) => {
+  const move = (evt: MoveEvent) => {
     let index = state.current.selected;
     if (index == -1) return;
+
+    console.log(state.current.area.y);
 
     // mutable object
     let boat = state.current.boats[index]
@@ -115,7 +124,7 @@ const useGrid = (size: number, area: Box): number[] => {
     setBoats(clone(state.current.boats));
   }; 
 
-  const mousedown = (evt: any) => {
+  const down = (evt: MoveEvent) => {
     let size = state.current.tileSize;
     
     // find selected boat
@@ -142,7 +151,7 @@ const useGrid = (size: number, area: Box): number[] => {
     setBoats(clone(state.current.boats));
   };
 
-  const mouseup = () => {
+  const up = () => {
     let index = state.current.selected;
     if (!state.current.boats[index]) {
       state.current.selected = -1;
@@ -159,54 +168,51 @@ const useGrid = (size: number, area: Box): number[] => {
     setBoats(clone(state.current.boats));
   };
 
+  const touchmove = (evt: TouchEvent) => {
+    move({
+      pageX: evt.touches[0].clientX,
+      pageY: evt.touches[0].clientY
+    });
+  };
+
+  const touchstart = (evt: TouchEvent) => {
+    down({
+      pageX: evt.touches[0].clientX,
+      pageY: evt.touches[0].clientY
+    });
+  };
+
+  const mousemove = (evt: MouseEvent) => {
+    move({
+      pageX: evt.pageX,
+      pageY: evt.pageY
+    });
+  };
+
+  const mousedown = (evt: MouseEvent) => {
+    down({
+      pageX: evt.pageX,
+      pageY: evt.pageY
+    });
+  };
+
   useEffect(() => {
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mousedown', mousedown);
-    window.addEventListener('mouseup', mouseup);
-
-    window.addEventListener('touchmove', (evt) => {
-      
-
-      //document.body.style.overflow = 'hidden';
-      //console.log(document.body);
-      
-      let test = {
-        pageX: evt.touches[0].clientX,
-        pageY: evt.touches[0].clientY
-      };
-
-      //console.log(test);
-
-      mousemove(test);
-    
-      //console.log(evt.touches[0].screenX);
-    });
-
-    window.addEventListener('touchend', () => {
-      document.body.style.overflow = 'scroll';
-
-      mouseup();
-      console.log('end');
-    });
-
-    window.addEventListener('touchstart', (evt) => {
-      //document.body.style.overflow = 'hidden';
-
-      console.log('start?');
-      
-      let test = {
-        pageX: evt.touches[0].clientX,
-        pageY: evt.touches[0].clientY
-      };
-      mousedown(test);
-    
-      //console.log(evt.touches[0].screenX);
-    });
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchmove', touchmove);
+    window.addEventListener('touchstart', touchstart);
+    window.addEventListener('touchend', up);
+    window.addEventListener('touchcancel', up);
 
     return () => {
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mousedown', mousedown);
-      window.removeEventListener('mouseup', mouseup);
+      window.removeEventListener('mouseup', up);
+      window.removeEventListener('touchmove', touchmove);
+      window.removeEventListener('touchstart', touchstart);
+      window.removeEventListener('touchend', up);
+      window.removeEventListener('touchcancel', up);
     }
   }, []);
 
