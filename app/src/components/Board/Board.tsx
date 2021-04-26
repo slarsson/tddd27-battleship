@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Grid from './Grid';
 
@@ -16,39 +16,47 @@ enum GridType {
 
 interface Props {
   type: GridType;
-  test?: number;
+  maxWidth?: number;
 }
 
 const SIZE = 10;
-const MAX_TILE_WIDTH = 60;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
-const Board = ({ type, test }: Props) => {
-  const [tileSize, setTileSize] = useRecoilState<number>(tileSizeState);
+const sizeFromWindowHeight = () => {
   
-  const div = useRef<HTMLDivElement | null>(null);
-  const observer = useRef(
-    new ResizeObserver(() => {
-      if (div.current && test == undefined) {
-        setTileSize(Math.min(div.current.clientWidth / (SIZE + 1), MAX_TILE_WIDTH));
-      }
-    })
-  );
+  
+  console.log(window.innerWidth);
+  
+  return Math.trunc((window.innerHeight * 0.4) / (SIZE + 1));
+};
 
-  useEffect(() => {
-    if (div.current) {
-      observer.current.observe(div.current)
+const sizeFromWidth = (w: number) => {
+  return Math.trunc(Math.min(w, 600) / (SIZE + 1));
+};
+
+const Board = ({ type, maxWidth }: Props) => {
+  const [tileSize, setTileSize] = useState<number>(maxWidth == null ? sizeFromWindowHeight() : sizeFromWidth(maxWidth));
+
+  const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState);
+  
+  const resize = () => {
+    let size: number;
+    if (maxWidth != undefined) {
+      size = sizeFromWidth(maxWidth);
+    } else {
+      size = sizeFromWindowHeight();
     }
-  }, []);
+    r_setTileSize(size);
+    setTileSize(size);
+  };
+
+  useEffect(() => resize(), [maxWidth]);
 
   let tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
 
-  if (test) {
-    tileStyle = {width: `${test}px`, height: `${test}px`};
-  }
-
   return (
-    <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}>
+    <div className="board" style={{width: `${tileSize * 11 + 1}px`}}>
+      {/* <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}> */}
       <div className="board-header board-header-top">
         <div style={tileStyle} className="tile"></div>
         {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'top-' + i}>{alpha[i]}</div>)}
@@ -60,7 +68,7 @@ const Board = ({ type, test }: Props) => {
         <div className="grid">
           {type == GridType.Click ? <Grid tileSize={tileSize} size={SIZE}></Grid> : null}
           {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
-          {type == GridType.View ? <ViewGrid tileSize={test ? test : 0} size={SIZE}></ViewGrid> : null }
+          {type == GridType.View ? <ViewGrid tileSize={tileSize} size={SIZE}></ViewGrid> : null }
         </div>
       </div>
     </div>

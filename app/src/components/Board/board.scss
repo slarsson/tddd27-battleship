@@ -37,6 +37,7 @@
 
 
 	.tile {
+		box-sizing: border-box;
 		border-right: var(--grid-border-size) solid var(--grid-border-color);
 		border-bottom: var(--grid-border-size) solid var(--grid-border-color);
 		display: flex;
@@ -102,7 +103,7 @@
 	box-sizing: border-box;
 	background-color: red;
 	//position: absolute;
-	border:2px solid tomato;
+	border:1px solid tomato;
 	//opacity: 0.9;
 	cursor: move;
 	user-select: none;
@@ -111,5 +112,5 @@
 	justify-content: center;
 	font-size: 10px;
 
-	color: transparent;
+	//color: transparent;
 }
