@@ -23,10 +23,6 @@ const SIZE = 10;
 const alpha = 'ABCDEFGHIJKLMNOPQRST';
 
 const sizeFromWindowHeight = () => {
-  
-  
-  console.log(window.innerWidth);
-  
   return Math.trunc((window.innerHeight * 0.4) / (SIZE + 1));
 };
 

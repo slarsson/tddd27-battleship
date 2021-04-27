@@ -10,13 +10,11 @@ interface Props {
 }
 
 const DragGrid = ({ size, tileSize }: Props) => {
-  const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState);
-
-  
+  //const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState); 
   const [box, setBox] = useState<Box>({x: 0, y: 0, width: 0, height: 0});
   const div = useRef<HTMLDivElement | null>(null);
+
   const resize = () => {
-    console.log('left:', div.current?.offsetTop);
     if (div.current) {
       setBox({
         x: div.current.getBoundingClientRect().left,
@@ -27,25 +25,17 @@ const DragGrid = ({ size, tileSize }: Props) => {
     }
   };
 
-  //useEffect(() => resize(), [tileSize]);
-
-  // useEffect(() => {
-  //   window.addEventListener('resize', resize);
-  //   return () => window.removeEventListener('resize', resize);
-  // }, []);
-
-
   useEffect(() => {
-    r_setTileSize(tileSize);
+    //r_setTileSize(tileSize);
     resize();
   }, [tileSize]);
 
-  // TODO: fix this!!!
+  // This is stupid. But it works.
+  // Used to fix 1px offset when the div has changed position.
   useEffect(() => {
-    setTimeout(() => {
-      resize();
-    }, 200);
-  }, []);;
+    let itrv = setInterval(() => resize(), 500);
+    return () => clearInterval(itrv);
+  }, []);
 
   const grid = useGrid(size, box);
 
@@ -54,7 +44,7 @@ const DragGrid = ({ size, tileSize }: Props) => {
       {grid.map((v, i) => {
         return (
           <div 
-            style={{width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v > 99 ? 'gold' : 'transparent'}}
+            style={{width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v > 99 ? '#BEF264' : 'transparent'}}
             className="tile"
             key={'grid-' + i}
           >

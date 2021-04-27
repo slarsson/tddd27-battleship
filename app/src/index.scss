@@ -33,3 +33,23 @@ body, html {
 *:focus {
   outline:none !important
 }
+
+.button--ok {
+  cursor: pointer;
+  //margin-top: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 500;
+  justify-content: space-between;
+  border: none;
+  background-color: #84CC16;
+  padding: 5px 10px 5px 10px;
+  border-radius: 20px;
+
+  svg {
+      width: 24px;
+      height: 24px;
+      margin-left: 5px;
+  }
+}
