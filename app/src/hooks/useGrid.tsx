@@ -1,9 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Boat } from '../components/Board/Boats';
 import { boatsState } from '../components/Board/state';
 
-interface Box {
+import { atom } from 'recoil';
+
+export const gridActions = atom({
+  key: 'gridActions',
+  default: {
+    clear: (): void => {},
+    export: (): number[] | void => {}
+  }
+});
+
+export interface Box {
   x: number;
   y: number;
   width: number;
@@ -35,7 +45,7 @@ const clone = (items: any) => {
 const useGrid = (size: number, area: Box): number[] => {
   const [grid, setGrid] = useState<number[]>(new Array(size * size).fill(0));
   const [boats, setBoats] = useRecoilState(boatsState);
-
+  const setGridActions = useSetRecoilState(gridActions);
   const state = useRef<State>({area: area, selected: -1, size: 0, tileSize: 0, grid: grid, boats: []});
 
   // use ref to keep reference when using addEventListener
@@ -196,6 +206,30 @@ const useGrid = (size: number, area: Box): number[] => {
     });
   };
 
+  // TODO: clean this up, maybe..
+  const clear = () => {
+    console.log(state.current);
+    for (let i = 0; i < state.current.grid.length; i++) {
+      state.current.grid[i] = 0;
+    }
+
+    for (let i = 0; i < state.current.boats.length; i++) {
+      state.current.boats[i].move = false;
+      state.current.boats[i].x = state.current.boats[i].originX;
+      state.current.boats[i].y = state.current.boats[i].originY;
+      state.current.boats[i].targetX = state.current.boats[i].originX;
+      state.current.boats[i].targetY = state.current.boats[i].originY;
+      state.current.boats[i].transition = 'left 0.1s ease-out, top 0.1s ease-out';
+    }
+
+    setGrid([...state.current.grid]);
+    setBoats(clone(state.current.boats));
+  };
+
+  const exportGrid = () => {
+    return [...state.current.grid];
+  }
+
   useEffect(() => {
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mousedown', mousedown);
@@ -204,6 +238,8 @@ const useGrid = (size: number, area: Box): number[] => {
     window.addEventListener('touchstart', touchstart);
     window.addEventListener('touchend', up);
     window.addEventListener('touchcancel', up);
+
+    setGridActions({ clear: clear, export: exportGrid });
 
     return () => {
       window.removeEventListener('mousemove', mousemove);
@@ -216,10 +252,8 @@ const useGrid = (size: number, area: Box): number[] => {
     }
   }, []);
 
+
   return grid;
 };
 
 export default useGrid;
-export type {
-  Box
-}

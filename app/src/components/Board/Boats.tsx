@@ -38,7 +38,7 @@ const Boats = () => {
               position: 'absolute'
             }}
           >
-            {b.x} - {b.y}
+            {/* {b.x} - {b.y} */}
           </div>
         )
       })}

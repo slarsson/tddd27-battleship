@@ -5,16 +5,24 @@ import Boats, { Boat } from '../Board/Boats';
 import Modal from '../Modal/Modal';
 import { boatsState, tileSizeState } from '../../components/Board/state';
 
+import { gridActions } from '../../hooks/useGrid';
+
 import './game.scss';
 
 const Game = () => {
   const [tempView, setTempView] = useState<string>('place');
+  const grid = useRecoilValue(gridActions);
 
   const tempSwap = () => {
     let view = 'place';
     if (tempView == view) view = 'shoot';
     setTempView(view);
   };
+
+  const exportGrid = () => {
+    const arr = grid.export();
+    console.log(arr);
+  }
 
   return (
     <>
@@ -34,6 +42,13 @@ const Game = () => {
           <div className="game-wrapper">
             <div className="game-info">            
               <span>jockieboi</span> vs <span>alex_ceesay</span>
+            </div>
+            <div className="game-info">
+              <p><span className="gold">Status:</span> place boats </p>
+              <button className="button--ok" onClick={exportGrid}>
+                DONE
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+              </button>
             </div>
             <PlaceBoats></PlaceBoats>
           </div>
@@ -64,23 +79,13 @@ const PlaceBoats = () => {
   const tileSize = useRecoilValue<number>(tileSizeState);
   const boatHouse = useRef<HTMLDivElement | null>(null);
   const div = useRef<HTMLDivElement | null>(null);
+  const grid = useRecoilValue(gridActions);
 
   const boatStuff = () => {
     if (!boatHouse.current) return;  
     let vertical = false;
     if (boatHouse.current.clientWidth >= boatHouse.current.clientHeight) vertical = true;
     let values = randomBoats(boatHouse.current.offsetTop, boatHouse.current.offsetLeft, tileSize, vertical);
-    setBoats([...values]);
-  };
-
-  const clear = () => {
-    let values: Boat[] = [];
-    for (let boat of boats) {
-      boat = {...boat};
-      boat.x = boat.originX;
-      boat.y = boat.originY;
-      values.push(boat);
-    }
     setBoats([...values]);
   };
 
@@ -120,7 +125,7 @@ const PlaceBoats = () => {
               height: '90%'
             }}
           ></div>
-          <button onClick={() => clear()}>
+          <button onClick={() => grid.clear()}>
             <p>CLEAR</p>
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"/></svg>
           </button>
