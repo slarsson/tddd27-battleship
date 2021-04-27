@@ -3,23 +3,33 @@ import React, { useState, useEffect, useRef, createRef } from 'react';
 interface Props {
   size: number;
   tileSize: number;
+  grid?: TileState[];
+  handler?: (index: number, value: TileState) => void;
 }
 
 interface TileProps {
   value: TileState;
+  index: number;
+  handler?: (index: number, value: TileState) => void;
 }
 
-enum TileState {
+export enum TileState {
+  None,
   Empty,
   Miss,
   Hit,
   PartialHit,
+  Loading
 }
 
-const Tile = ({ value }: TileProps) => {
+const Tile = ({ value, index, handler }: TileProps) => {
+  const onClick = () => {
+    if (handler) handler(index, value);
+  };
+  
   switch (value) {
     case TileState.Empty:
-      return <button className="tile-state-empty"></button>;
+      return <button className="tile-state-empty" onClick={onClick}></button>;
     case TileState.Miss:
       return (
         <div className="tile-state-miss">
@@ -30,36 +40,33 @@ const Tile = ({ value }: TileProps) => {
       return <div className="tile-state-hit"><div></div></div>;
     case TileState.PartialHit:
       return <div>?</div>;
+    case TileState.Loading:
+      return <div className="waiting"></div>
     default:
       return <div></div>;
   }
 }
 
-const Grid = ({ size, tileSize }: Props) => {
-  const [grid, setGrid] = useState<TileState[]>((new Array(size * size)).fill(TileState.Empty));
+const Grid = ({ size, tileSize, grid, handler }: Props) => {
+  const [localGrid, setLocalGrid] = useState<TileState[]>(grid != undefined ? grid : (new Array(size * size)).fill(TileState.Empty));
+  const key = useRef<string>(Math.random().toString(36).substring(5));
 
   useEffect(() => {
-    grid[32] = TileState.Hit;
-    grid[44] = TileState.Miss;
-    setGrid([...grid]);
-  }, []);
+    if (grid) {
+      setLocalGrid([...grid]);
+    }
+  }, [grid]);
 
-  const handler = (idx: number) => {
-    grid[idx] = TileState.Hit;
-    setGrid([...grid]);
-  }
-  
   return (
     <div>
-      {grid.map((v, i) => {
+      {localGrid.map((v, i) => {
         return (
           <div 
             style={{width: `${tileSize}px`, height: `${tileSize}px`}}
             className="tile"
-            key={'grid-' + i}
-            onClick={() => handler(i)}
+            key={key + 'grid-' + i}
           >
-            <Tile value={v}></Tile>
+            <Tile value={v} index={i} handler={handler}></Tile>
           </div>
         )
       })}

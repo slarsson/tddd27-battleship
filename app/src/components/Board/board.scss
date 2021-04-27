@@ -48,6 +48,10 @@
 			width: 100%;
 			height: 100%;
 		}
+
+		.waiting {
+			background-color: green;
+		}
 	}
 
 	.grid {
@@ -83,7 +87,6 @@
 			}		
 		}
 		.tile-state-miss { 
-			//background-color:red;
 			display: flex;
 			align-items: center;
 			justify-content: center;

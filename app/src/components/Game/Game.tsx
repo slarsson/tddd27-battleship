@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import Board, { GridType } from '../Board/Board';
 import Boats, { Boat } from '../Board/Boats';
+import { TileState } from '../Board/Grid';
 import Modal from '../Modal/Modal';
 import { boatsState, tileSizeState } from '../../components/Board/state';
+
+import { useHistory } from 'react-router-dom';
 
 import { gridActions } from '../../hooks/useGrid';
 
@@ -12,6 +15,7 @@ import './game.scss';
 const Game = () => {
   const [tempView, setTempView] = useState<string>('place');
   const grid = useRecoilValue(gridActions);
+  let history = useHistory();
 
   const tempSwap = () => {
     let view = 'place';
@@ -24,14 +28,18 @@ const Game = () => {
     console.log(arr);
   }
 
+  const close = () => {
+    history.push('/');
+  };
+
   return (
     <>
     <div className="game-container">
       <div className="game-header">
         <h1>BATTLESHIP</h1>
         <div onClick={() => tempSwap()}>_</div>
-        <button>
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        <button onClick={close}>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
         </button>
       </div>
 
@@ -142,7 +150,15 @@ interface ShootBoatsProps {
 const ShootBoats = ({children}: ShootBoatsProps) => { 
   const [maxWidth, setMaxWidth] = useState<number>(0);
   const [current, setCurrent] = useState<string>('left');
+  const [myGrid, setMyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.Empty));
+  const [enemyGrid, setEnemyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.None));
   const div = useRef<HTMLDivElement | null>(null);
+
+  const onShoot = (index: number, value: TileState) => {
+    myGrid[index] = TileState.Loading;
+    setMyGrid([...myGrid]);
+    console.log('index:', index, 'state:', value);
+  }
 
   const resize = () => {
     if (div.current) {
@@ -155,9 +171,19 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
   };
 
   useEffect(() => {
+    const x = () => {
+      let i = Math.trunc(Math.random() * 100);
+      enemyGrid[i] =TileState.Miss;
+      setEnemyGrid([...enemyGrid]);
+    };
+    let itrv = setInterval(() => x(), 5000);
+    
     resize();
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      clearInterval(itrv);
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   let nodes: JSX.Element;
@@ -171,18 +197,18 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
     nodes = (
       <>
       <div>
-        <Board type={GridType.Click} maxWidth={maxWidth}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={myGrid} handler={onShoot}></Board>
       </div>
       <div>
-        <Board type={GridType.View} maxWidth={maxWidth}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={enemyGrid}></Board>
       </div>
       </>
     );
   } else {
     buttons = (
       <div className="game-shoot-switch">
-        <button onClick={() => setCurrent('left')}>left</button>
-        <button onClick={() => setCurrent('right')}>right</button>
+        <button onClick={() => setCurrent('left')}>ENEMY</button>
+        <button onClick={() => setCurrent('right')}>MYSELF</button>
       </div>
     );
     
@@ -190,14 +216,14 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
       nodes = (
         <div>
           <h1>left</h1>
-          <Board type={GridType.Click} maxWidth={maxWidth}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={myGrid} handler={onShoot}></Board>
         </div>
       );
     } else if (current == 'right') {
       nodes = (
         <div>
           <h1>right</h1>
-          <Board type={GridType.View} maxWidth={maxWidth}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={enemyGrid}></Board>
         </div>
       );
     } else {

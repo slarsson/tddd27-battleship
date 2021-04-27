@@ -29,6 +29,10 @@ export default function App() {
       path: "/how-to",
       name: "How to"
     },
+    {
+      path: "/test",
+      name: "test"
+    },
   ]
   
   return (

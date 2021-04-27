@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import Grid from './Grid';
+import Grid, { TileState } from './Grid';
 
 import DragGrid from './DragGrid';
-import ViewGrid from './ViewGrid';
 import { tileSizeState } from './state';
 
 import './board.scss';
 
 enum GridType {
   Drag,
-  Click,
   View
 }
 
 interface Props {
   type: GridType;
   maxWidth?: number;
+  grid?: TileState[];
+  handler?: (index: number, value: TileState) => void;
 }
 
 const SIZE = 10;
@@ -30,7 +30,7 @@ const sizeFromWidth = (w: number) => {
   return Math.trunc(Math.min(w, 600) / (SIZE + 1));
 };
 
-const Board = ({ type, maxWidth }: Props) => {
+const Board = ({ type, maxWidth, grid, handler }: Props) => {
   const [tileSize, setTileSize] = useState<number>(maxWidth == null ? sizeFromWindowHeight() : sizeFromWidth(maxWidth));
 
   const [r_tileSize, r_setTileSize] = useRecoilState<number>(tileSizeState);
@@ -62,9 +62,8 @@ const Board = ({ type, maxWidth }: Props) => {
           {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'left-' + i}>{i + 1}</div>)}
         </div>
         <div className="grid">
-          {type == GridType.Click ? <Grid tileSize={tileSize} size={SIZE}></Grid> : null}
+          {type == GridType.View ? <Grid tileSize={tileSize} size={SIZE} grid={grid} handler={handler}></Grid> : null}
           {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
-          {type == GridType.View ? <ViewGrid tileSize={tileSize} size={SIZE}></ViewGrid> : null }
         </div>
       </div>
     </div>

@@ -158,10 +158,15 @@
         background-color: blue;
         width: 100%;
 
-       button {
-           width: 50%;
-           height: 100px;
-       }
+        button {
+            width: 50%;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            padding: 20px 0px 20px 0px;
+            cursor: pointer;
+            background-color: #ededed;
+        }
     }
 
     .game-shoot-wrapper {
