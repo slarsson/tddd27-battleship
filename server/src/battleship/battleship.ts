@@ -1,7 +1,7 @@
-import { MessageType, TileState, GameState, Board, StateUpdate } from '../../../interfaces';
+import { MessageType, TileState, GameState, StateUpdate } from '../../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
-import { State, GameBoard } from './state';
+import { GameBoard } from './state';
 
 interface Connection {
   [key: string]: WebSocket;
@@ -12,29 +12,40 @@ interface Tokens {
   p2: string;
 }
 
+
+interface State {
+  gameState: GameState,
+  names: string[],
+  turn: number,
+  boats: any,
+  boards: number[][][]
+}
+
+const defaultGrid = (size: number): number[]  => {
+  return new Array(size * size).fill(0);
+};
+
 class Battleship {
-
   private activated: boolean = false;
-
   private id: string;
-  private connections: Connection = {};
-
+  private connections: (WebSocket | null)[] = [null, null];
   private p1: string;
   private p2: string;
-
-  private p1Name: string = 'player1';
-  private p2Name: string = 'player2';
-
   private state: State;
 
-  constructor(id: string, size = 5) {
+  constructor(id: string) {
     this.id = id;
     this.p1 = uuidv4();
     this.p2 = uuidv4();
     this.state = {
-      mode: GameState.Waiting,
-      p1Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)},
-      p2Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)}
+      gameState: GameState.ShootBoats,
+      names: ['player1', 'player2'],
+      turn: 0,
+      boats: [],
+      boards: [
+        [defaultGrid(10), defaultGrid(10)],
+        [defaultGrid(10), defaultGrid(10)]
+      ]
     }
   }
 
@@ -54,41 +65,70 @@ class Battleship {
   }
 
   public setName(token: string, name: string): boolean {
-    if (this.p1 == token) {
-      if (this.p2Name == name) return false;
-      console.log('SET NAME P1', name, this.p1, this.id)
-      this.p1Name = name;
-      return true;
-    }
+    // if (this.p1 == token) {
+    //   if (this.p2Name == name) return false;
+    //   console.log('SET NAME P1', name, this.p1, this.id)
+    //   this.p1Name = name;
+    //   return true;
+    // }
 
-    if (this.p2 == token) {
-      if (this.p1Name == name) return false;
-      console.log('SET NAME P2', name, this.p2, this.id)
-      this.p2Name = name;
-      return true;
-    }
+    // if (this.p2 == token) {
+    //   if (this.p1Name == name) return false;
+    //   console.log('SET NAME P2', name, this.p2, this.id)
+    //   this.p2Name = name;
+    //   return true;
+    // }
 
-    return false;
-  }
+    //return false;
 
-
-  public addPlayer(token: string, ws: WebSocket): boolean {
-    if (token != this.p1 && token != this.p2) return false;
-    this.connections[token] = ws;
-    console.log('CONNECT:', token);
-    console.log(this.state);
     return true;
   }
 
+  public addConnection(token: string, ws: WebSocket) {
+    let player: number;
+    if (token == this.p1) {
+      player = 0;
+    } else if (token == this.p2) {
+      player = 1;
+    } else {
+      return;
+    }
+    this.connections[player] = ws;
+  }
+
+  private broadcast(player: number, msg: any, all: boolean = false) {
+    console.log("???", msg);
+    
+    for (let i = 0; i < this.connections.length; i++) {
+      if (all || i === player) {
+        // HANDLE ERRORS
+        this.connections[i]?.send(JSON.stringify(msg));
+      }
+    }
+  }
 
   public handler(msg: any) {
+    let player: number;
+    if (msg.token == this.p1) {
+      player = 0;
+    } else if (msg.token == this.p2) {
+      player = 1;
+    } else {
+      return;
+    }
+    
     switch (msg.type) {
-      case MessageType.Status:        
-        this.sendBoardState(msg.token);
+      case MessageType.Status:       
+        this.sendStateUpdate(player);
+        break;
+      
+      case MessageType.SetBoats:
+        console.log('place boatz');
         break;
 
       case MessageType.Shoot:
-        this.shoot(msg.token, msg.index);
+        if (msg.index > 100) return;
+        this.shoot(player, msg.index);
         break;
     
       default:
@@ -96,54 +136,26 @@ class Battleship {
     }
   }
 
-  private shoot(token: string, index: number) {
-    if ((token != this.p1 && token != this.p2) || index < 0) return;
-
-    if (token == this.p1) {
-      if (index >= this.state.p1Board.enemy.length || index >= this.state.p2Board.self.length) return;
-      this.state.p1Board.enemy[index] = 999;
-      this.state.p2Board.self[index] = 999;      
-    } else {
-      if (index >= this.state.p2Board.enemy.length || index >= this.state.p1Board.self.length) return;
-      this.state.p2Board.enemy[index] = 999;
-      this.state.p1Board.self[index] = 999;
+  private shoot(player: number, index: number) {
+    // Checks:
+    // if (this.state.turn != player) return;
+    // if (this.state.gameState != GameState.ShootBoats) return;
+    this.state.boards[player][0][index] = 1;
+    this.state.boards[player == 0 ? 1 : 0][1][index] = 1;
+    for (let i = 0; i < this.connections.length; i++) {
+      this.sendStateUpdate(i);
     }
-
-    this.sendBoardState(this.p1);
-    this.sendBoardState(this.p2);
-  } 
-
-  private sendBoardState(token: string) {
-    if (token != this.p1 && token != this.p2) return;
-    
-    let board: GameBoard;
-    if (token == this.p1) {
-      board = this.state.p1Board;
-    } else {
-      board = this.state.p2Board
-    }
-
-    let msg: StateUpdate = {
-      type: MessageType.StateUpdate,
-      mode: GameState.Waiting,
-      board: {
-        self: board.self, 
-        enemy: board.enemy
-      },
-      players: {
-        p1: this.p1Name,
-        p2: this.p2Name
-      }
-    };
-
-    this.broadcast(token, msg);
   }
 
-  private broadcast(token: string, msg: any, all = false) {
-    const target = this.connections[token];
-    if (target === undefined) return;
-    // TODO: check errors?
-    target.send(JSON.stringify(msg));
+  private sendStateUpdate(player: number) {
+    let msg: StateUpdate = {
+      type: MessageType.StateUpdate,
+      gameState: this.state.gameState,
+      names: this.state.names,
+      yourTurn: player == this.state.turn,
+      boards: this.state.boards[player]
+    };
+    this.broadcast(player, msg);
   }
 }
 

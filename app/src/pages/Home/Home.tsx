@@ -5,6 +5,8 @@ import { Button, Input } from "../../components";
 import { useHistory } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { currentGameState } from "../../atoms/game";
+import { GameState } from "../../../../interfaces";
+const API_URL = import.meta.env.VITE_API_URL as string; 
 
 export const Home = () => {
   const [playerName, setPlayerName] = useState("");
@@ -14,7 +16,6 @@ export const Home = () => {
   const [loading, setLoading] = useState(false);
   const setGlobalGameState = useSetRecoilState(currentGameState); //TODO: läs in från localstorage för att plocka redan existerande
   let history = useHistory();
-  let url = "http://localhost:3000";
   
   useEffect(() => {}, [playerName, gameId]);
 
@@ -27,7 +28,7 @@ export const Home = () => {
     }
 
     try {
-      let res = await fetch(url + "/create", {
+      let res = await fetch(API_URL + "/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +39,7 @@ export const Home = () => {
       });
       let data = await res.json();
 
-      setGlobalGameState({ gameId: data.gameId, token: data.token })
+      setGlobalGameState({ alive: true, gameId: data.gameId, token: data.token, view: GameState.PlaceBoats, myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0) });
 
       // TODO: skriv till localstorage
       setLoading(false);
@@ -56,7 +57,7 @@ export const Home = () => {
     console.log("gameid", gameId);
 
     try {
-      let res = await fetch(url + "/available", {
+      let res = await fetch(API_URL + "/available", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Battleship from './battleship';
 import { validateName } from './lib';
 import { games } from './state';
+import * as crypto from 'crypto';
 
 // init
 const app = express();
@@ -38,7 +39,8 @@ app.post('/create', (req: Request, res: Response) => {
     return;
   }
 
-  const gameId = uuidv4();
+  // TODO:: check no backslash in URL
+  let gameId = crypto.randomBytes(5).toString('base64').slice(0, -1);
   const game = new Battleship(gameId);
   const tokens = game.getTokens();
   game.setName(tokens.p1, req.body.name);
@@ -101,7 +103,7 @@ app.post('/join', (req: Request, res: Response) => {
     return;
   }
 
-  game.activate();
+  //game.activate();
 
   res.json({
     token: tokens.p2

@@ -2,6 +2,7 @@ export enum MessageType {
   // incoming
   Connect = 'connect',
   Status = 'status',
+  SetBoats = 'setboats',
   Shoot = 'shoot',
 
   // outgoing
@@ -9,9 +10,10 @@ export enum MessageType {
 }
 
 export enum GameState {
-  Waiting = 'waiting',
-  AddBoats = 'addboats'
-  
+  WaitingForPlayers = 'waitingforplayers',
+  PlaceBoats = 'placeboats',
+  ShootBoats = 'shootboats',
+  Completed = 'completed'
 }
 
 export * from './incoming';

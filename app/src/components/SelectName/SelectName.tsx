@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { Input } from "..";
+import { GameState } from "../../../../interfaces";
 import { currentGameState } from "../../atoms/game";
+const API_URL = import.meta.env.VITE_API_URL as string; 
 
 interface Player2Props {
     activeGameId: string,
@@ -23,8 +25,8 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
 
     // TODO: Check if playername already exists
     try {
-        let url = "http://localhost:3000";
-        let res = await fetch(url + "/join", {
+
+        let res = await fetch(API_URL + "/join", {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
@@ -37,7 +39,7 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
       let data = await res.json();
     
       // new given token to player2
-      setCurrentGame({ gameId: activeGameId, token: data.token });
+      setCurrentGame({ alive: true, gameId: activeGameId, token: data.token, view: GameState.PlaceBoats, myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0) });
       setLoading(false);
     } catch (err) {
       setLoading(false);
