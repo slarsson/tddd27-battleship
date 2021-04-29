@@ -44,11 +44,7 @@ export default function App() {
                 <Home></Home>
               </Layout>
             </Route>
-            <Route exact path="/">
-              <Layout links={navLinks}>
-                <Route exact path="/g/:id" component={GameHandler} />
-              </Layout>
-            </Route>
+            <Route exact path="/g/:id" component={GameHandler} />
             <Route exact path="/how-to">
               <Layout links={navLinks}>
                 <HowTo></HowTo>

@@ -3,23 +3,21 @@ import "./gameHandler.scss";
 import { useRecoilValue } from "recoil";
 import { currentGameState } from "../../atoms/game";
 import { useParams } from "react-router-dom";
-import { GameTest as Game, Loader, SelectName } from "../../components";
+import { Game, Loader, SelectName } from "../../components";
+const API_URL = import.meta.env.VITE_API_URL as string; 
 
 export const GameHandler = () => {
   const currentGame = useRecoilValue(currentGameState);
   const [loading, setLoading] = useState(false);
   const [gameExist, setGameExist] = useState(false);
   let { id }: any = useParams();
-  let url = "http://localhost:3000";
-
-  console.log(currentGame);
   
   useEffect(() => {
-    if (currentGame !== null) { 
-      setLoading(true);
-    } else { 
+    if (currentGame.alive == false) { 
       console.log("här?");
       checkGame()
+    } else { 
+      setLoading(true);
     }
   }, [currentGame]);
   
@@ -27,7 +25,7 @@ export const GameHandler = () => {
     setLoading(true);  
 
     try {
-      let res = await fetch(url + "/available", {
+      let res = await fetch(API_URL + "/available", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,17 +52,19 @@ export const GameHandler = () => {
     }
   }
   
+  console.log(currentGame);
+
   return (
-    <div className="gameContainer">
-      {currentGame != null ? (
-        <Game />
+    <>
+    {currentGame.alive == true ? (
+      <Game />
       ) : (
-      gameExist ? (
+        gameExist ? (
          <SelectName activeGameId={id} />
       ) : (
         <Loader loaderSize={"3px solid #1D4ED8"} />
       )  
       )}
-    </div>
+    </>
   );
 };

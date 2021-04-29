@@ -10,12 +10,25 @@ import { useHistory } from 'react-router-dom';
 
 import { gridActions } from '../../hooks/useGrid';
 
+import { ws } from '../../lib/ws';
+
+import { GameState, MessageType } from '../../../../interfaces';
+
+
 import './game.scss';
+import { currentGameState } from '../../atoms/game';
+
+const WS_URL = import.meta.env.VITE_WS as string; 
 
 const Game = () => {
   const [tempView, setTempView] = useState<string>('place');
+
+  //const [view, setView] = useState<string>('place');
+
   const grid = useRecoilValue(gridActions);
+  const send = useRef<any>(() => {});
   let history = useHistory();
+  const [game, setGame] = useRecoilState(currentGameState);
 
   const tempSwap = () => {
     let view = 'place';
@@ -24,6 +37,13 @@ const Game = () => {
   };
 
   const exportGrid = () => {
+    
+    send.current({
+      type: MessageType.Status,
+      gameId: game.gameId,
+      token:  game.token
+    })
+    
     const arr = grid.export();
     console.log(arr);
   }
@@ -31,6 +51,44 @@ const Game = () => {
   const close = () => {
     history.push('/');
   };
+
+
+  const onMessage = (msg: any) => {
+    let state = {...game};
+    console.log(msg);
+    
+    state.view = GameState.ShootBoats;
+    state.myGrid = msg.boards[0];
+    state.enemyGrid = msg.boards[1];
+
+    setGame(state);
+
+    console.log(msg);
+  };
+
+  const onError = () => {
+    console.log("error..");
+  };
+
+  useEffect(() => {
+
+    console.log('test', game);
+    ws(WS_URL, onMessage, onError).then(fn => {
+      send.current = fn;  
+      fn({
+          type: 'connect',
+          gameId: game.gameId,
+          token: game.token,
+      });
+
+    //   fn({
+    //     type: 'status',
+    //     gameId: game.gameId,
+    //     token: game.token,
+    // });
+    });
+
+  }, []);
 
   return (
     <>
@@ -45,8 +103,7 @@ const Game = () => {
 
       <div className="game-inner-container">
         
-        {tempView != 'place' ? 
-          null : 
+        {game.view == GameState.PlaceBoats ? 
           <div className="game-wrapper">
             <div className="game-info">            
               <span>jockieboi</span> vs <span>alex_ceesay</span>
@@ -60,12 +117,12 @@ const Game = () => {
             </div>
             <PlaceBoats></PlaceBoats>
           </div>
+          : null
         }
         
-        {tempView != 'shoot' ? 
-          null : 
+        {game.view == GameState.ShootBoats ? 
           <div className="shoot-boat-wrapper">
-            <ShootBoats>
+            <ShootBoats send={send.current}>
               <div className="game-info">            
                 jockieboi vs alex_ceesay 
               </div>
@@ -74,6 +131,7 @@ const Game = () => {
             </div>
             </ShootBoats>
           </div>
+          : null
         }
       </div>
     </div>
@@ -145,18 +203,29 @@ const PlaceBoats = () => {
 
 interface ShootBoatsProps {
   children: React.ReactNode;
+  send: (msg: any) => void;
 }
 
-const ShootBoats = ({children}: ShootBoatsProps) => { 
+const ShootBoats = ({children, send}: ShootBoatsProps) => { 
   const [maxWidth, setMaxWidth] = useState<number>(0);
   const [current, setCurrent] = useState<string>('left');
-  const [myGrid, setMyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.Empty));
-  const [enemyGrid, setEnemyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.None));
+  // const [myGrid, setMyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.Empty));
+  // const [enemyGrid, setEnemyGrid] = useState<TileState[]>((new Array(100)).fill(TileState.None));
   const div = useRef<HTMLDivElement | null>(null);
+  const game = useRecoilValue(currentGameState);
+
 
   const onShoot = (index: number, value: TileState) => {
-    myGrid[index] = TileState.Loading;
-    setMyGrid([...myGrid]);
+    console.log(send);
+    // myGrid[index] = TileState.Loading;
+    // setMyGrid([...myGrid]);
+    send({
+      type: MessageType.Shoot,
+      gameId: game.gameId,
+      token: game.token,
+      index: index
+    });
+
     console.log('index:', index, 'state:', value);
   }
 
@@ -171,17 +240,17 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
   };
 
   useEffect(() => {
-    const x = () => {
-      let i = Math.trunc(Math.random() * 100);
-      enemyGrid[i] =TileState.Miss;
-      setEnemyGrid([...enemyGrid]);
-    };
-    let itrv = setInterval(() => x(), 5000);
+    // const x = () => {
+    //   let i = Math.trunc(Math.random() * 100);
+    //   enemyGrid[i] =TileState.Miss;
+    //   setEnemyGrid([...enemyGrid]);
+    // };
+    // let itrv = setInterval(() => x(), 5000);
     
     resize();
     window.addEventListener('resize', resize);
     return () => {
-      clearInterval(itrv);
+      //clearInterval(itrv);
       window.removeEventListener('resize', resize);
     };
   }, []);
@@ -197,10 +266,10 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
     nodes = (
       <>
       <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={myGrid} handler={onShoot}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
       </div>
       <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={enemyGrid}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
       </div>
       </>
     );
@@ -216,14 +285,14 @@ const ShootBoats = ({children}: ShootBoatsProps) => {
       nodes = (
         <div>
           <h1>left</h1>
-          <Board type={GridType.View} maxWidth={maxWidth} grid={myGrid} handler={onShoot}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
         </div>
       );
     } else if (current == 'right') {
       nodes = (
         <div>
           <h1>right</h1>
-          <Board type={GridType.View} maxWidth={maxWidth} grid={enemyGrid}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
         </div>
       );
     } else {

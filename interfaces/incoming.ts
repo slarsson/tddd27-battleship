@@ -10,6 +10,10 @@ export interface Connect extends IncomingMessage {}
 
 export interface Status extends IncomingMessage {}
 
+export interface SetBoats extends IncomingMessage {
+  grid: number[];
+} 
+
 export interface Shoot extends IncomingMessage {
   index: number;
 }
@@ -20,13 +24,13 @@ export const validateMessage = (msg: any): boolean => {
 
   switch (msg.type) {
     case MessageType.Connect:
-      // check
-
-      // send outgoing response --> gameState
       return true;
 
     case MessageType.Status:
       return true;
+
+    case MessageType.SetBoats:
+      return !(msg.grid === undefined || typeof msg.grid !== 'object' || Array.isArray(msg.grid));
 
     case MessageType.Shoot:
       return !(msg.index === undefined || typeof msg.index !== 'number');
