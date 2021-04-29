@@ -3,7 +3,7 @@ import "./gameHandler.scss";
 import { useRecoilValue } from "recoil";
 import { currentGameState } from "../../atoms/game";
 import { useParams } from "react-router-dom";
-import { Game, Loader, SelectName } from "../../components";
+import { GameTest as Game, Loader, SelectName } from "../../components";
 
 export const GameHandler = () => {
   const currentGame = useRecoilValue(currentGameState);
