@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./index.scss"
-import { Home, HowTo, Test } from './pages'
+import { Home, HowTo, Test, GameHandler } from './pages'
 import { Navbar } from './components';
 
 import { RecoilRoot } from 'recoil';
@@ -42,6 +42,11 @@ export default function App() {
             <Route exact path="/">
               <Layout links={navLinks}>
                 <Home></Home>
+              </Layout>
+            </Route>
+            <Route exact path="/">
+              <Layout links={navLinks}>
+                <Route exact path="/g/:id" component={GameHandler} />
               </Layout>
             </Route>
             <Route exact path="/how-to">

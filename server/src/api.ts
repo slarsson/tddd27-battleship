@@ -8,9 +8,6 @@ import { games } from './state';
 // init
 const app = express();
 
-// middlewares
-app.use(express.json({ limit: '1mb' }));
-
 app.use((req: Request, res: Response, next: Function) => {
   res.set({
     'Access-Control-Allow-Credentials': 'true',
@@ -20,6 +17,9 @@ app.use((req: Request, res: Response, next: Function) => {
   });
   next();
 });
+
+// middlewares
+app.use(express.json({ limit: '1mb' }));
 
 // routes
 app.options('*', (req: Request, res: Response) => res.end(''));
@@ -46,6 +46,30 @@ app.post('/create', (req: Request, res: Response) => {
   res.json({
     gameId: gameId,
     token: tokens.p1,
+  });
+});
+
+app.post('/available', (req: Request, res: Response) => {
+  if (req.body.gameId === undefined) {
+    res.status(400).json({ error: 'missing gameId' });
+    return;
+  }
+
+  const game = games.get(req.body.gameId);
+  if (game === undefined) {
+    res.json({ok: false});
+    return;
+  }
+
+  if (game.isActivated()) {
+    res.json({ok: false});
+    return;
+  }
+
+  //game.activate();
+
+  res.json({
+    ok: true
   });
 });
 

@@ -1,7 +1,7 @@
-import { MessageType, TileState, GameState, Board } from '../../../interfaces';
+import { MessageType, TileState, GameState, Board, StateUpdate } from '../../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
-import { State, GameStates, GameBoard } from './state';
+import { State, GameBoard } from './state';
 
 interface Connection {
   [key: string]: WebSocket;
@@ -32,7 +32,7 @@ class Battleship {
     this.p1 = uuidv4();
     this.p2 = uuidv4();
     this.state = {
-      mode: GameStates.WaitingForPlayers,
+      mode: GameState.Waiting,
       p1Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)},
       p2Board: {dimension: size, self: new Array(size * size).fill(TileState.Empty), enemy: new Array(size * size).fill(TileState.Empty)}
     }
@@ -83,7 +83,7 @@ class Battleship {
 
   public handler(msg: any) {
     switch (msg.type) {
-      case MessageType.Status:
+      case MessageType.Status:        
         this.sendBoardState(msg.token);
         break;
 
@@ -123,11 +123,16 @@ class Battleship {
       board = this.state.p2Board
     }
 
-    let msg: GameState = {
-      type: MessageType.GameState,
+    let msg: StateUpdate = {
+      type: MessageType.StateUpdate,
+      mode: GameState.Waiting,
       board: {
         self: board.self, 
         enemy: board.enemy
+      },
+      players: {
+        p1: this.p1Name,
+        p2: this.p2Name
       }
     };
 

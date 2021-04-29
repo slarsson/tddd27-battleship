@@ -20,6 +20,9 @@ export const validateMessage = (msg: any): boolean => {
 
   switch (msg.type) {
     case MessageType.Connect:
+      // check
+
+      // send outgoing response --> gameState
       return true;
 
     case MessageType.Status:
