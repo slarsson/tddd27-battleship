@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import Battleship from './battleship';
 import { validateName } from './lib';
 import { games } from './state';
@@ -25,8 +24,8 @@ app.use(express.json({ limit: '1mb' }));
 // routes
 app.options('*', (req: Request, res: Response) => res.end(''));
 app.head('*', (req: Request, res: Response) => res.end(''));
-app.get('*', (req: Request, res: Response) => res.status(404).json({}));
 app.get('/', (req: Request, res: Response) => res.json({ api: 'v1.0' }));
+app.get('*', (req: Request, res: Response) => res.status(404).json({}));
 
 app.post('/create', (req: Request, res: Response) => {
   if (req.body.name === undefined) {
@@ -39,8 +38,7 @@ app.post('/create', (req: Request, res: Response) => {
     return;
   }
 
-  // TODO:: check no backslash in URL
-  let gameId = crypto.randomBytes(5).toString('base64').slice(0, -1);
+  let gameId = crypto.randomBytes(5).toString('base64').slice(0, -1).replace('+', '').replace('/', '');
   const game = new Battleship(gameId);
   const tokens = game.getTokens();
   game.setName(tokens.p1, req.body.name);
@@ -59,16 +57,14 @@ app.post('/available', (req: Request, res: Response) => {
 
   const game = games.get(req.body.gameId);
   if (game === undefined) {
-    res.json({ok: false});
+    res.json({ ok: false });
     return;
   }
 
   if (game.isActivated()) {
-    res.json({ok: false});
+    res.json({ ok: false });
     return;
   }
-
-  //game.activate();
 
   res.json({
     ok: true
@@ -103,6 +99,7 @@ app.post('/join', (req: Request, res: Response) => {
     return;
   }
 
+  // TODO: add this back later
   //game.activate();
 
   res.json({
