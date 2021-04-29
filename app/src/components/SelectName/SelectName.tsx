@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { Input } from "..";
+import { currentGameState } from "../../atoms/game";
 
 interface Player2Props {
     activeGameId: string,
@@ -8,7 +10,7 @@ interface Player2Props {
 export const SelectName = ({ activeGameId }: Player2Props) => {
   const [loading, setLoading] = useState(false);
   const [player2Name, setPlayer2Name] = useState("");
-  const [dummyState, setDummyState] = useState(true); //TODO: remove and fix this
+  const setCurrentGame = useSetRecoilState(currentGameState);
 
   const joinPlayer = async () => {
     setLoading(true);
@@ -33,11 +35,10 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
         }),
       });
       let data = await res.json();
-      console.log(data);
-      
+    
+      // new given token to player2
+      setCurrentGame({ gameId: activeGameId, token: data.token });
       setLoading(false);
-      //onSubmit(data);
-
     } catch (err) {
       setLoading(false);
       console.log("err...", err);
@@ -45,6 +46,6 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
   };
 
   return (
-    <Input setToggler={setDummyState} placeHolder={"Player name"} setInputValue={setPlayer2Name} buttonText={"Join"} loading={loading} onSubmit={joinPlayer} />
+    <Input placeHolder={"Player name"} setInputValue={setPlayer2Name} buttonText={"Join"} loading={loading} onSubmit={joinPlayer} />
   );
 };

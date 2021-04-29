@@ -3,8 +3,8 @@ import "./home.scss";
 import battleship from "../../assets/battleship.png";
 import { Button, Input } from "../../components";
 import { useHistory } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { gameStates } from "../../atoms/game";
+import { useSetRecoilState } from "recoil";
+import { currentGameState } from "../../atoms/game";
 
 export const Home = () => {
   const [playerName, setPlayerName] = useState("");
@@ -12,7 +12,7 @@ export const Home = () => {
   const [createToggler, setCreateToggler] = useState(true);
   const [joinToggler, setJoinToggler] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [globalGameState, setGlobalGameState] = useRecoilState(gameStates); //TODO: läs in från localstorage för att plocka redan existerande
+  const setGlobalGameState = useSetRecoilState(currentGameState); //TODO: läs in från localstorage för att plocka redan existerande
   let history = useHistory();
   let url = "http://localhost:3000";
   
@@ -38,13 +38,11 @@ export const Home = () => {
       });
       let data = await res.json();
 
-      let a = { ...globalGameState };
-      a[data.gameId] = { gameId: data.gameId, token: data.token };
-      setGlobalGameState(a);
+      setGlobalGameState({ gameId: data.gameId, token: data.token })
 
       // TODO: skriv till localstorage
       setLoading(false);
-      history.push(data.gameId);
+      history.push(`/g/${data.gameId}`);
     } catch (e) {
       setLoading(false);
       console.log("err...", e);
@@ -72,7 +70,7 @@ export const Home = () => {
       // Game exists
       if (data.ok) {
         setLoading(false);
-        history.push(gameId);
+        history.push(`/g/${gameId}`);
       } else {
         setLoading(false);
         alert("No game asdasd");

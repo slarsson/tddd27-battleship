@@ -5,7 +5,13 @@ export enum MessageType {
   Shoot = 'shoot',
 
   // outgoing
-  GameState = 'gamestate'
+  StateUpdate = 'stateupdate'
+}
+
+export enum GameState {
+  Waiting = 'waiting',
+  AddBoats = 'addboats'
+  
 }
 
 export * from './incoming';

@@ -3,7 +3,7 @@ import "./input.scss"
 import { Loader } from "..";
 
 interface InputProps {
-    setToggler: (value: boolean) => void;
+    setToggler?: (value: boolean) => void;
     placeHolder: string;
     setInputValue: (value: string) => void;
     buttonText: string;
@@ -12,11 +12,11 @@ interface InputProps {
 }
 
 export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, loading, onSubmit }: InputProps) => {
-
+  
   const useOutsideAlerter = (ref: any) => {
     useEffect(() => {
       function handleClickOutside(e: MouseEvent) {
-        if (ref.current && !ref.current.contains(e.target)) {
+        if (ref.current && !ref.current.contains(e.target) && setToggler) {
           setToggler(true);
         }
       }
@@ -48,9 +48,7 @@ export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, load
         }}
       >
         {loading ? (
-          <div style={{ width: "20px", height: "20px" }}>
-            <Loader loaderSize={"3px solid #1D4ED8"} />
-          </div>
+          <Loader loaderSize={"3px solid #1D4ED8"} />
         ) : (
             buttonText
         )}

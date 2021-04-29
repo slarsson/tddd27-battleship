@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from "react";
-import "./game.scss";
-import { useRecoilState } from "recoil";
-import { gameStates } from "../../atoms/game";
+import "./gameHandler.scss";
+import { useRecoilValue } from "recoil";
+import { currentGameState } from "../../atoms/game";
 import { useParams } from "react-router-dom";
-import { SelectName } from "../../components";
+import { Game, Loader, SelectName } from "../../components";
 
-export const Game = () => {
-  const [gameData, setGameData] = useRecoilState(gameStates);
+export const GameHandler = () => {
+  const currentGame = useRecoilValue(currentGameState);
   const [loading, setLoading] = useState(false);
-  const [gameStatus, setGameStatus] = useState(false); //TODO: fix dynamic views
+  const [gameExist, setGameExist] = useState(false);
   let { id }: any = useParams();
   let url = "http://localhost:3000";
 
-  // useEffect check if gameId is available --> later localstorage
+  console.log(currentGame);
+  
   useEffect(() => {
-    if (!gameData[id]) {
-      checkGame()
+    if (currentGame !== null) { 
+      setLoading(true);
     } else { 
-      // connect to game without nameinput
-      console.log("gameID finns, pusha player");
+      console.log("här?");
+      checkGame()
     }
-  }, []);
+  }, [currentGame]);
   
   const checkGame = async () => {
     setLoading(true);  
@@ -35,13 +36,14 @@ export const Game = () => {
           gameId: id,
         }),
       });
-      let data = await res.json();
+      let data = await res.json();      
       console.log("ok?", data);
 
       // Game exists
       if (data.ok) {
         setLoading(false);
-        setGameStatus(true);
+        // toggle name-input field
+        setGameExist(true);
       } else {
         setLoading(false);
         alert("No game buddy");
@@ -54,13 +56,15 @@ export const Game = () => {
   
   return (
     <div className="gameContainer">
-      {gameStatus ? (
-        <SelectName activeGameId={id} />
-      ) : ""}
-      
-      {/* <h2>Game ID: {gameData[id].gameId}</h2>
-      <p>Player 1: {gameData[id].token}</p>
-      <p>Player 2..: </p>  */}
+      {currentGame != null ? (
+        <Game />
+      ) : (
+      gameExist ? (
+         <SelectName activeGameId={id} />
+      ) : (
+        <Loader loaderSize={"3px solid #1D4ED8"} />
+      )  
+      )}
     </div>
   );
 };
