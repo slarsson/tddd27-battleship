@@ -21,7 +21,7 @@ interface State {
   boards: number[][][]
 }
 
-const defaultGrid = (size: number): number[]  => {
+const defaultGrid = (size: number): number[] => {
   return new Array(size * size).fill(0);
 };
 
@@ -98,7 +98,7 @@ class Battleship {
 
   private broadcast(player: number, msg: any, all: boolean = false) {
     console.log("???", msg);
-    
+
     for (let i = 0; i < this.connections.length; i++) {
       if (all || i === player) {
         // HANDLE ERRORS
@@ -116,12 +116,12 @@ class Battleship {
     } else {
       return;
     }
-    
+
     switch (msg.type) {
-      case MessageType.Status:       
+      case MessageType.Status:
         this.sendStateUpdate(player);
         break;
-      
+
       case MessageType.SetBoats:
         console.log('place boatz');
         break;
@@ -130,7 +130,7 @@ class Battleship {
         if (msg.index > 100) return;
         this.shoot(player, msg.index);
         break;
-    
+
       default:
         break;
     }
@@ -140,8 +140,10 @@ class Battleship {
     // Checks:
     // if (this.state.turn != player) return;
     // if (this.state.gameState != GameState.ShootBoats) return;
+    let p2 = player == 0 ? 1 : 0;
     this.state.boards[player][0][index] = 1;
     this.state.boards[player == 0 ? 1 : 0][1][index] = 1;
+    this.state.turn = this.state.turn == 0 ? 1 : 0;
     for (let i = 0; i < this.connections.length; i++) {
       this.sendStateUpdate(i);
     }

@@ -39,7 +39,7 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
       let data = await res.json();
     
       // new given token to player2
-      setCurrentGame({ alive: true, gameId: activeGameId, token: data.token, view: GameState.PlaceBoats, myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0) });
+      setCurrentGame({ alive: true, gameId: activeGameId, token: data.token, view: GameState.PlaceBoats, myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0), yourTurn: false });
       setLoading(false);
     } catch (err) {
       setLoading(false);

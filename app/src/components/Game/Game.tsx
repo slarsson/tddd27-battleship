@@ -33,6 +33,7 @@ const Game = () => {
     state.view = GameState.ShootBoats;
     state.myGrid = msg.boards[0];
     state.enemyGrid = msg.boards[1];
+    state.yourTurn = msg.yourTurn;
     setGame(state);
   };
 
@@ -81,11 +82,15 @@ const Game = () => {
           <div className="shoot-boat-wrapper">
             <ShootBoats send={send.current}>
               <div className="game-info">            
-                jockieboi vs alex_ceesay 
+                <div className="score">
+                  jockieboi vs alex_ceesay
+                </div>
               </div>
               <div className="game-info">
-              <p><span className="gold">Status:</span> TODO</p>
-            </div>
+                <div className={`status ${game.yourTurn ? 'ok' : 'waiting'}`}>
+                  {game.yourTurn ? `It's your turn!` : `Waiting for other player`}
+                </div>
+              </div>
             </ShootBoats>
           </div>
           : null

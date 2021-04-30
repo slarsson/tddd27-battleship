@@ -56,9 +56,11 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
       <>
       <div>
         <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
+        <p>Enemy board</p>
       </div>
       <div>
         <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
+        <p>Your board</p>
       </div>
       </>
     );
@@ -73,14 +75,12 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
     if (current == 'left') {
       nodes = (
         <div>
-          <h1>left</h1>
           <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
         </div>
       );
     } else if (current == 'right') {
       nodes = (
         <div>
-          <h1>right</h1>
           <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
         </div>
       );

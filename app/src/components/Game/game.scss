@@ -129,6 +129,8 @@
             padding-left: 10px; // REMOVE!
             padding-right: 10px; // REMOVE!
         }
+
+
     }
 
     .game-shoot-container {
@@ -141,6 +143,11 @@
         height: 100%;
         width: 100%;
 
+        p {
+            text-align: center;
+            padding: 10px;
+        }
+
         @media screen and (max-width: 800px) {
             flex-direction: column;
         }
@@ -151,7 +158,32 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        
+
+        .status {
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            font-weight: 500;
+            margin: 0px 10px 0px 10px;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        .waiting {
+            background-color: #FEC514;
+            border: 1px solid #DEA801;
+            color: #333;
+        }
+
+        .ok {
+            background-color: #84CC16;
+            border: 1px solid #9EE82D;
+        }
+
+        .score {
+            font-weight: 500;
+            font-size: 20px;
+        }
     }
 
     .game-shoot-switch {
