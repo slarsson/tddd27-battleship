@@ -7,7 +7,7 @@ export enum MessageType {
 
   // outgoing
   StateUpdate = 'stateupdate',
-  Boats = 'boats'
+  Boats = 'boats',
 }
 
 export enum GameState {
@@ -15,7 +15,7 @@ export enum GameState {
   WaitingForPlayers = 'waitingforplayers',
   PlaceBoats = 'placeboats',
   ShootBoats = 'shootboats',
-  Completed = 'completed'
+  Completed = 'completed',
 }
 
 export enum TileState {

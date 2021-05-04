@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import Battleship from './battleship';
-import { validateName } from './lib';
+import { validateName } from './helpers';
 import { games } from './state';
 import * as crypto from 'crypto';
 
@@ -13,7 +13,7 @@ app.use((req: Request, res: Response, next: Function) => {
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-type, Accept',
-    'Access-Control-Allow-Methods': 'GET, POST, HEAD, OPTIONS'
+    'Access-Control-Allow-Methods': 'GET, POST, HEAD, OPTIONS',
   });
   next();
 });
@@ -67,7 +67,7 @@ app.post('/available', (req: Request, res: Response) => {
   }
 
   res.json({
-    ok: true
+    ok: true,
   });
 });
 
@@ -103,7 +103,7 @@ app.post('/join', (req: Request, res: Response) => {
   //game.activate();
 
   res.json({
-    token: tokens.p2
+    token: tokens.p2,
   });
 });
 

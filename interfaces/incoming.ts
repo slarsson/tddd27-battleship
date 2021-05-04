@@ -6,14 +6,13 @@ export interface IncomingMessage {
   token: string;
 }
 
-// incoming
 export interface Connect extends IncomingMessage {}
 
 export interface Status extends IncomingMessage {}
 
 export interface SetBoats extends IncomingMessage {
   grid: number[];
-} 
+}
 
 export interface Shoot extends IncomingMessage {
   index: number;
@@ -36,8 +35,8 @@ export const validateMessage = (msg: any): boolean => {
 
     case MessageType.Shoot:
       return !(msg.index === undefined || typeof msg.index !== 'number');
-  
+
     default:
       return false;
   }
-}
+};

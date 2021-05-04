@@ -1,4 +1,4 @@
-import { MessageType, TileState, GameState, StateUpdate } from '../../../interfaces';
+import { MessageType, TileState, GameState, StateUpdate } from '../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
 
@@ -12,12 +12,12 @@ interface Tokens {
 }
 
 interface State {
-  gameState: GameState,
-  names: string[],
-  turn: number,
-  boats: number[],
-  boatsPlaced: boolean[],
-  boards: number[][][]
+  gameState: GameState;
+  names: string[];
+  turn: number;
+  boats: number[];
+  boatsPlaced: boolean[];
+  boards: number[][][];
 }
 
 const defaultGrid = (size: number, state: TileState): number[] => {
@@ -44,15 +44,15 @@ class Battleship {
       boatsPlaced: [false, false],
       boards: [
         [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
-        [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)]
-      ] 
-    }
+        [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
+      ],
+    };
   }
 
   public getTokens(): Tokens {
     return {
       p1: this.p1,
-      p2: this.p2
+      p2: this.p2,
     };
   }
 
@@ -86,13 +86,13 @@ class Battleship {
       return;
     }
     this.connections[player] = ws;
-    
+
     // Both connected
     if (this.connections[0] !== null && this.connections[1] !== null) {
       if (this.state.gameState != GameState.WaitingForPlayers) return;
-        this.state.gameState = GameState.PlaceBoats;
+      this.state.gameState = GameState.PlaceBoats;
     }
-    
+
     if (this.connections[0] !== null) {
       this.sendStateUpdate(0);
     }
@@ -103,7 +103,7 @@ class Battleship {
   }
 
   private broadcast(player: number, msg: any, all: boolean = false) {
-    console.log("???", msg);
+    console.log('???', msg);
 
     for (let i = 0; i < this.connections.length; i++) {
       if (all || i === player) {
@@ -130,9 +130,9 @@ class Battleship {
 
       case MessageType.SetBoats:
         console.log('place stuff ok');
-        
+
         if (this.state.gameState != GameState.PlaceBoats) return;
-      
+
         // TODO: check
         this.state.boards[player][0] = msg.grid;
         this.state.boatsPlaced[player] = true;
@@ -140,7 +140,7 @@ class Battleship {
         if (this.state.boatsPlaced[player == 0 ? 1 : 0]) {
           this.state.gameState = GameState.ShootBoats;
         }
-     
+
         this.sendStateUpdate(0);
         this.sendStateUpdate(1);
         break;
@@ -158,11 +158,11 @@ class Battleship {
   private shoot(player: number, index: number) {
     if (this.state.turn != player) return;
     console.log(this.state.turn, player);
-    
+
     if (this.state.gameState != GameState.ShootBoats) return;
-    
+
     let p2 = player == 0 ? 1 : 0;
-    
+
     if (this.state.boards[p2][0][index] >= 100) {
       this.state.boards[player][1][index] = TileState.Hit;
       this.state.boards[p2][0][index] = TileState.HitOnBoat;
@@ -185,7 +185,7 @@ class Battleship {
       enemyName: this.state.names[player == 0 ? 1 : 0],
       yourTurn: player == this.state.turn,
       boards: this.state.boards[player],
-      boats: this.state.boats
+      boats: this.state.boats,
     };
     this.broadcast(player, msg);
   }

@@ -13,7 +13,6 @@ const ws = (server: any, cb: any): WebSocket.Server => {
 
   wss.on('connection', (ws: WebSocket) => {
     ws.on('message', (payload: string) => {
-      
       let msg: any;
       try {
         msg = JSON.parse(payload);
@@ -48,9 +47,9 @@ const ws = (server: any, cb: any): WebSocket.Server => {
       ws.ping();
     }, 1000);
 
-    ws.on('open', (w: WebSocket) => { });
-    ws.on('close', (w: WebSocket) => { });
-    ws.on('error', (w: WebSocket) => { });
+    ws.on('open', (w: WebSocket) => {});
+    ws.on('close', (w: WebSocket) => {});
+    ws.on('error', (w: WebSocket) => {});
     ws.on('ping', (w: WebSocket) => w.pong());
 
     ws.on('pong', (w: WebSocket) => {
@@ -59,6 +58,6 @@ const ws = (server: any, cb: any): WebSocket.Server => {
   });
 
   return wss;
-}
+};
 
 export { ws };
