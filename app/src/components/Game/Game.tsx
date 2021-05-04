@@ -18,23 +18,31 @@ const Game = () => {
   const send = useRef<any>(() => {});
   let history = useHistory();
 
-  const exportGrid = () => {    
-    // TODO: use correct msg here..
+  const exportGrid = () => {
     send.current({
-      type: MessageType.Status,
+      type: MessageType.SetBoats,
       gameId: game.gameId,
-      token:  game.token
-    })
+      token:  game.token,
+      grid: grid.export()
+    });
     console.log(grid.export());
   }
 
   const onMessage = (msg: any) => {
-    let state = {...game};
-    state.view = GameState.ShootBoats;
-    state.myGrid = msg.boards[0];
-    state.enemyGrid = msg.boards[1];
-    state.yourTurn = msg.yourTurn;
-    setGame(state);
+    console.log('msg:', msg);
+    if (msg.type == MessageType.StateUpdate) {
+      let state = {...game};
+      state.view = msg.gameState;
+      state.myGrid = msg.boards[0];
+      state.enemyGrid = msg.boards[1];
+      state.yourTurn = msg.yourTurn;
+      state.boats = msg.boats;
+
+      state.myName = msg.myName;
+      state.enemyName = msg.enemyName;
+      setGame(state);
+    }
+
   };
 
   const onError = () => {
@@ -43,6 +51,7 @@ const Game = () => {
 
   useEffect(() => {
     ws(WS_URL, onMessage, onError).then(fn => {
+      console.log('first');
       send.current = fn;  
       fn({
           type: MessageType.Connect,
@@ -65,7 +74,7 @@ const Game = () => {
         {game.view == GameState.PlaceBoats ? 
           <div className="game-wrapper">
             <div className="game-info">            
-              <span>jockieboi</span> vs <span>alex_ceesay</span>
+              <span>{game.myName}</span> vs <span>{game.enemyName}</span>
             </div>
             <div className="game-info">
               <p><span className="gold">Status:</span> place boats </p>
@@ -83,7 +92,7 @@ const Game = () => {
             <ShootBoats send={send.current}>
               <div className="game-info">            
                 <div className="score">
-                  jockieboi vs alex_ceesay
+                  <span>{game.myName}</span> vs <span>{game.enemyName}</span>
                 </div>
               </div>
               <div className="game-info">
@@ -92,6 +101,12 @@ const Game = () => {
                 </div>
               </div>
             </ShootBoats>
+          </div>
+          : null
+        }
+        {game.view == GameState.WaitingForPlayers ? 
+          <div>
+             waiting for players..
           </div>
           : null
         }

@@ -18,6 +18,7 @@
 	}
 
 	.grid-container {
+		width: 100%;
 		//background-color: green;
 		display: flex;
 	}
@@ -49,6 +50,10 @@
 			height: 100%;
 		}
 
+		& > div {
+			transition: background-color 0.3s ease-out;
+		}
+
 		.waiting {
 			background-color: green;
 		}
@@ -74,9 +79,15 @@
 
 		.tile-state-empty { background-color: transparent; }
 		.tile-state-hit {
+			//background-color: red;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+
+			g {
+				//fill: green;
+				fill:#D73502;
+			}
 
 			div {
 				border-radius: 100%;
@@ -98,6 +109,13 @@
 			}
 		}
 
+		.tile-state-loading {
+			background-color: #878e9b;
+		}
+
+		.tile-state-boat {
+			background-color: #DEA801;
+		}
 	}
 
 }

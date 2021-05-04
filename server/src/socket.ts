@@ -17,10 +17,12 @@ const ws = (server: any, cb: any): WebSocket.Server => {
       let msg: any;
       try {
         msg = JSON.parse(payload);
+        console.log('incoming:', msg);
         if (!validateMessage(msg)) {
           // TODO: disconnect client
           return;
         }
+        console.log('ok');
       } catch (err) {
         console.error(err);
         // TODO: disconnect client

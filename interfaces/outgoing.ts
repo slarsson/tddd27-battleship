@@ -6,8 +6,9 @@ export interface OutgoingMessage {
 
 export interface StateUpdate extends OutgoingMessage {
   gameState: GameState;
-  names: string[];
+  myName: string;
+  enemyName: string;
   yourTurn: boolean;
   boards: number[][];
+  boats: number[];
 }
-

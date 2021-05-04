@@ -52,8 +52,6 @@ export const GameHandler = () => {
     }
   }
   
-  console.log(currentGame);
-
   return (
     <>
     {currentGame.alive == true ? (

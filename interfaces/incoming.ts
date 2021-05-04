@@ -1,7 +1,8 @@
 import { MessageType } from './index';
 
 export interface IncomingMessage {
-  type: MessageType,
+  type: MessageType;
+  gameId: string;
   token: string;
 }
 
@@ -21,6 +22,7 @@ export interface Shoot extends IncomingMessage {
 export const validateMessage = (msg: any): boolean => {
   if (msg.type === undefined || typeof msg.type !== 'string') return false;
   if (msg.token === undefined || typeof msg.token !== 'string') return false;
+  if (msg.gameId === undefined || typeof msg.gameId !== 'string') return false;
 
   switch (msg.type) {
     case MessageType.Connect:
@@ -30,7 +32,7 @@ export const validateMessage = (msg: any): boolean => {
       return true;
 
     case MessageType.SetBoats:
-      return !(msg.grid === undefined || typeof msg.grid !== 'object' || Array.isArray(msg.grid));
+      return !(msg.grid === undefined || typeof msg.grid !== 'object' || !Array.isArray(msg.grid));
 
     case MessageType.Shoot:
       return !(msg.index === undefined || typeof msg.index !== 'number');

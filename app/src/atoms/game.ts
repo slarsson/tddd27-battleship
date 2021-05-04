@@ -16,6 +16,9 @@ interface CurrentGame {
   myGrid: number[];
   enemyGrid: number[];
   yourTurn: boolean;
+  boats: number[];
+  myName: string;
+  enemyName: string;
 }
 
 interface GameStates {
@@ -29,10 +32,13 @@ export const currentGameState = atom<CurrentGame>({
     alive: false,
     gameId: '',
     token: '',
-    view: GlobalGameState.PlaceBoats,
-    myGrid: new Array(100).fill(0),
-    enemyGrid: new Array(100).fill(0),
-    yourTurn: false
+    view: GlobalGameState.Loading,
+    myGrid: new Array(100).fill(-1),
+    enemyGrid: new Array(100).fill(-1),
+    yourTurn: false,
+    boats: [],
+    myName: '',
+    enemyName: ''
   }
 });
 

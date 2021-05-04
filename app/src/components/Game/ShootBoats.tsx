@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import Board, { GridType } from '../Board/Board';
-import { TileState } from '../Board/Grid';
+import { TileState } from '../../../../interfaces';
 import { MessageType } from '../../../../interfaces';
 import { currentGameState } from '../../atoms/game';
 
@@ -15,11 +15,19 @@ interface ShootBoatsProps {
 const ShootBoats = ({children, send}: ShootBoatsProps) => { 
   const [maxWidth, setMaxWidth] = useState<number>(0);
   const [current, setCurrent] = useState<string>('left');
-  const game = useRecoilValue(currentGameState);
+  const [game, setGame] = useRecoilState(currentGameState);
   const div = useRef<HTMLDivElement | null>(null);
 
   const onShoot = (index: number, value: TileState) => {
+    if (!game.yourTurn) return;
+    
     console.log('index:', index, 'state:', value);
+    
+    let x = {...game};
+    x.enemyGrid = [...game.enemyGrid]; 
+    x.enemyGrid[index] = TileState.Loading;
+    setGame(x);
+
     send({
       type: MessageType.Shoot,
       gameId: game.gameId,
@@ -55,11 +63,11 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
     nodes = (
       <>
       <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid} handler={onShoot}></Board>
         <p>Enemy board</p>
       </div>
       <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
+        <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
         <p>Your board</p>
       </div>
       </>
@@ -75,13 +83,13 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
     if (current == 'left') {
       nodes = (
         <div>
-          <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid} handler={onShoot}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid} handler={onShoot}></Board>
         </div>
       );
     } else if (current == 'right') {
       nodes = (
         <div>
-          <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid}></Board>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
         </div>
       );
     } else {

@@ -39,7 +39,7 @@ export const Home = () => {
       });
       let data = await res.json();
 
-      setGlobalGameState({ alive: true, gameId: data.gameId, token: data.token, view: GameState.PlaceBoats, myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0), yourTurn: false });
+      setGlobalGameState({ alive: true, gameId: data.gameId, token: data.token, view: GameState.Loading, boats: [], myGrid: new Array(100).fill(0), enemyGrid: new Array(100).fill(0), yourTurn: false, myName:"", enemyName:"" });
 
       // TODO: skriv till localstorage
       setLoading(false);

@@ -4,6 +4,36 @@ import Board, { GridType } from '../Board/Board';
 import Boats, { Boat } from '../Board/Boats';
 import { boatsState, tileSizeState } from '../../components/Board/state';
 import { gridActions } from '../../hooks/useGrid';
+import { currentGameState } from '../../atoms/game';
+
+const createBoats = (top: number, left: number, tileSize: number, sizes: number[]): Boat[] => {
+  let boats: Boat[] = [];
+  for (let i = 0; i < sizes.length; i++) {
+    let x = left;
+    let y = top;
+
+    let w = sizes[i];
+    let h = 1;
+    
+    boats.push({
+      id: 100 + i,
+      x: x,
+      y: y,
+      originX: x,
+      originY: y,
+      targetX: x,
+      targetY: y,
+      width: w,
+      height: h,
+      mouseOffsetX: 0,
+      mouseOffsetY: 0,
+      move: false,
+      transition: ''
+    });
+  }
+
+  return boats;
+}
 
 
 const PlaceBoats = () => {
@@ -13,13 +43,31 @@ const PlaceBoats = () => {
   const boatHouse = useRef<HTMLDivElement | null>(null);
   const div = useRef<HTMLDivElement | null>(null);
   const grid = useRecoilValue(gridActions);
+  const game = useRecoilValue(currentGameState);
+
+
+  useEffect(() => {
+    console.log('boats:', game.boats);
+  }, [game.boats]);
+
+  //console.log('test:', tileSize);
 
   const boatStuff = () => {
+    console.log(game);
+      
     if (!boatHouse.current) return;  
-    let vertical = false;
-    if (boatHouse.current.clientWidth >= boatHouse.current.clientHeight) vertical = true;
-    let values = randomBoats(boatHouse.current.offsetTop, boatHouse.current.offsetLeft, tileSize, vertical);
+    let values = createBoats(boatHouse.current.offsetTop, boatHouse.current.offsetLeft, tileSize, game.boats);
+
+    console.log(values);
+
     setBoats([...values]);
+
+    
+    // if (!boatHouse.current) return;  
+    // let vertical = false;
+    // if (boatHouse.current.clientWidth >= boatHouse.current.clientHeight) vertical = true;
+    // let values = randomBoats(boatHouse.current.offsetTop, boatHouse.current.offsetLeft, tileSize, vertical);
+    // setBoats([...values]);
   };
 
   const resize = () => {

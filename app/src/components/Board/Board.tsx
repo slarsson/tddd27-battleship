@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import Grid, { TileState } from './Grid';
+import Grid from './Grid';
+import { TileState } from '../../../../interfaces';
 
 import DragGrid from './DragGrid';
 import { tileSizeState } from './state';
@@ -51,17 +52,16 @@ const Board = ({ type, maxWidth, grid, handler }: Props) => {
   let tileStyle = {width: `${tileSize}px`, height: `${tileSize}px`};
 
   return (
-    <div className="board" style={{width: `${tileSize * 11 + 1}px`}}>
-      {/* <div className="board" ref={div} style={{maxWidth: `${MAX_TILE_WIDTH * SIZE}px`}}> */}
-      <div className="board-header board-header-top">
+    <div className="board" style={{width: `${tileSize * 11}px`}}>
+      <div className="board-header board-header-top" style={{width: `${tileSize * 11}px`}}>
         <div style={tileStyle} className="tile"></div>
         {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'top-' + i}>{alpha[i]}</div>)}
       </div>
-      <div className="grid-container">
+      <div className="grid-container" style={{width: `${tileSize * 11}px`}}>
         <div className="board-header">
           {[...Array(SIZE)].map((_, i) => <div style={tileStyle} className="tile" key={'left-' + i}>{i + 1}</div>)}
         </div>
-        <div className="grid">
+        <div className="grid" style={{width: `${tileSize * 10}px`}}>
           {type == GridType.View ? <Grid tileSize={tileSize} size={SIZE} grid={grid} handler={handler}></Grid> : null}
           {type == GridType.Drag ? <DragGrid tileSize={tileSize} size={SIZE}></DragGrid> : null }
         </div>

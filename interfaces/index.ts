@@ -6,16 +6,26 @@ export enum MessageType {
   Shoot = 'shoot',
 
   // outgoing
-  StateUpdate = 'stateupdate'
+  StateUpdate = 'stateupdate',
+  Boats = 'boats'
 }
 
 export enum GameState {
+  Loading = 'loading',
   WaitingForPlayers = 'waitingforplayers',
   PlaceBoats = 'placeboats',
   ShootBoats = 'shootboats',
   Completed = 'completed'
 }
 
+export enum TileState {
+  Empty,
+  Available,
+  Hit,
+  HitOnBoat,
+  Miss,
+  Loading,
+}
+
 export * from './incoming';
 export * from './outgoing';
-export * from './board';
