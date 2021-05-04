@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import Board, { GridType } from '../Board/Board';
@@ -6,13 +5,12 @@ import { TileState } from '../../../../interfaces';
 import { MessageType } from '../../../../interfaces';
 import { currentGameState } from '../../atoms/game';
 
-
 interface ShootBoatsProps {
   children: React.ReactNode;
   send: (msg: any) => void;
 }
 
-const ShootBoats = ({children, send}: ShootBoatsProps) => { 
+const ShootBoats = ({ children, send }: ShootBoatsProps) => {
   const [maxWidth, setMaxWidth] = useState<number>(0);
   const [current, setCurrent] = useState<string>('left');
   const [game, setGame] = useRecoilState(currentGameState);
@@ -20,11 +18,11 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
 
   const onShoot = (index: number, value: TileState) => {
     if (!game.yourTurn) return;
-    
+
     console.log('index:', index, 'state:', value);
-    
-    let x = {...game};
-    x.enemyGrid = [...game.enemyGrid]; 
+
+    let x = { ...game };
+    x.enemyGrid = [...game.enemyGrid];
     x.enemyGrid[index] = TileState.Loading;
     setGame(x);
 
@@ -32,16 +30,16 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
       type: MessageType.Shoot,
       gameId: game.gameId,
       token: game.token,
-      index: index
+      index: index,
     });
-  }
+  };
 
   const resize = () => {
     if (div.current) {
       if (div.current.clientWidth <= 800) {
         setMaxWidth(div.current.clientWidth - 20);
         return;
-      }      
+      }
       setMaxWidth((div.current.clientWidth - 20) * 0.5);
     }
   };
@@ -62,14 +60,14 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
     buttons = <></>;
     nodes = (
       <>
-      <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid} handler={onShoot}></Board>
-        <p>Enemy board</p>
-      </div>
-      <div>
-        <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
-        <p>Your board</p>
-      </div>
+        <div>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid} handler={onShoot}></Board>
+          <p>Enemy board</p>
+        </div>
+        <div>
+          <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
+          <p>Your board</p>
+        </div>
       </>
     );
   } else {
@@ -79,7 +77,7 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
         <button onClick={() => setCurrent('right')}>MYSELF</button>
       </div>
     );
-    
+
     if (current == 'left') {
       nodes = (
         <div>
@@ -99,15 +97,13 @@ const ShootBoats = ({children, send}: ShootBoatsProps) => {
 
   return (
     <>
-    <div className="game-shoot-container" ref={div}>
-      <div className="game-shoot-wrapper">
-        <div className="game-shoot-info">
-          {children}
+      <div className="game-shoot-container" ref={div}>
+        <div className="game-shoot-wrapper">
+          <div className="game-shoot-info">{children}</div>
+          {nodes}
         </div>
-        {nodes}
       </div>
-    </div>
-    {buttons}
+      {buttons}
     </>
   );
 };
