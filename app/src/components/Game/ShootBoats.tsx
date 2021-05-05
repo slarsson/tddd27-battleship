@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import Board, { GridType } from '../Board/Board';
-import { TileState } from '../../../../interfaces';
+import { GameState, TileState } from '../../../../interfaces';
 import { MessageType } from '../../../../interfaces';
 import { currentGameState } from '../../atoms/game';
 
@@ -18,6 +18,7 @@ const ShootBoats = ({ children, send }: ShootBoatsProps) => {
 
   const onShoot = (index: number, value: TileState) => {
     if (!game.yourTurn) return;
+    if (game.view !== GameState.ShootBoats) return;
 
     console.log('index:', index, 'state:', value);
 

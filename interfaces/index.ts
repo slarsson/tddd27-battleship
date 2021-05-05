@@ -23,6 +23,7 @@ export enum TileState {
   Available,
   Hit,
   HitOnBoat,
+  BoatCompleted,
   Miss,
   Loading,
 }

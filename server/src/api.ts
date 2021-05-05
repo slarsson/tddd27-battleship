@@ -38,7 +38,10 @@ app.post('/create', (req: Request, res: Response) => {
     return;
   }
 
-  let gameId = crypto.randomBytes(5).toString('base64').slice(0, -1).replace('+', '').replace('/', '');
+  let gameId = crypto.randomBytes(5).toString('base64').slice(0, -1);
+  gameId = gameId.replace('+', '');
+  gameId = gameId.replace('/', '');
+
   const game = new Battleship(gameId);
   const tokens = game.getTokens();
   game.setName(tokens.p1, req.body.name);
@@ -100,7 +103,7 @@ app.post('/join', (req: Request, res: Response) => {
   }
 
   // TODO: add this back later
-  //game.activate();
+  game.activate();
 
   res.json({
     token: tokens.p2,

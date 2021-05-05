@@ -1,137 +1,136 @@
-
 :root {
-  --grid-border-color: #1F2937;
-	--grid-border-size: 1px;
-	
-	--board-header-background-color: #4B5563;
-	--board-header-color: #fff;
+  --grid-border-color: #1f2937;
+  --grid-border-size: 1px;
 
-	--grid-background-color: #9CA3AF;
+  --board-header-background-color: #4b5563;
+  --board-header-color: #fff;
+
+  --grid-background-color: #9ca3af;
 }
 
 .board {
-	border-top: var(--grid-border-size) solid var(--grid-border-color);
-	border-left: var(--grid-border-size) solid var(--grid-border-color);
+  border-top: var(--grid-border-size) solid var(--grid-border-color);
+  border-left: var(--grid-border-size) solid var(--grid-border-color);
 
-	* {
-		box-sizing: border-box;
-	}
+  * {
+    box-sizing: border-box;
+  }
 
-	.grid-container {
-		width: 100%;
-		//background-color: green;
-		display: flex;
-	}
+  .grid-container {
+    width: 100%;
+    //background-color: green;
+    display: flex;
+  }
 
-	.board-header {
-		//display: flex;
-		background-color: var(--board-header-background-color);
-		color: var(--board-header-color);
-	}
+  .board-header {
+    //display: flex;
+    background-color: var(--board-header-background-color);
+    color: var(--board-header-color);
+  }
 
-	.board-header-top {
-		display: flex;
-	}
+  .board-header-top {
+    display: flex;
+  }
 
+  .tile {
+    box-sizing: border-box;
+    border-right: var(--grid-border-size) solid var(--grid-border-color);
+    border-bottom: var(--grid-border-size) solid var(--grid-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
+    div {
+      width: 100%;
+      height: 100%;
+    }
 
+    & > div {
+      transition: background-color 0.3s ease-out;
+    }
 
+    .waiting {
+      background-color: green;
+    }
+  }
 
-	.tile {
-		box-sizing: border-box;
-		border-right: var(--grid-border-size) solid var(--grid-border-color);
-		border-bottom: var(--grid-border-size) solid var(--grid-border-color);
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .grid {
+    width: 100%;
+    background-color: var(--grid-background-color);
 
-		div {
-			width: 100%;
-			height: 100%;
-		}
+    div {
+      float: left;
+      box-sizing: border-box;
+    }
 
-		& > div {
-			transition: background-color 0.3s ease-out;
-		}
+    button {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
 
-		.waiting {
-			background-color: green;
-		}
-	}
+    .tile-state-empty {
+      background-color: transparent;
+    }
+    .tile-state-hit {
+      //background-color: red;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-	.grid {
-		width: 100%;
-		background-color: var(--grid-background-color);
-		
+      g {
+        //fill: green;
+        fill: #d73502;
+      }
 
-		div {
-			float: left;
-			box-sizing: border-box;
-		}
+      div {
+        border-radius: 100%;
+        width: 60%;
+        height: 60%;
+        background-color: lightgreen;
+        border: 1px solid green;
+      }
+    }
+    .tile-state-miss {
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-		button {
-			width: 100%;
-			height: 100%;
-			background-color: transparent;
-			border: none;
-			cursor: pointer;
-		}
+      svg {
+        fill: black;
+        width: 70%;
+        height: 70%;
+      }
+    }
 
-		.tile-state-empty { background-color: transparent; }
-		.tile-state-hit {
-			//background-color: red;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+    .tile-state-loading {
+      background-color: #878e9b;
+    }
 
-			g {
-				//fill: green;
-				fill:#D73502;
-			}
+    .tile-state-boat {
+      background-color: #dea801;
+    }
 
-			div {
-				border-radius: 100%;
-				width: 60%;
-				height: 60%;
-				background-color:lightgreen;
-				border: 1px solid green;
-			}		
-		}
-		.tile-state-miss { 
-			display: flex;
-			align-items: center;
-			justify-content: center;
-
-			svg {
-				fill: black;
-				width: 70%;
-				height: 70%;
-			}
-		}
-
-		.tile-state-loading {
-			background-color: #878e9b;
-		}
-
-		.tile-state-boat {
-			background-color: #DEA801;
-		}
-	}
-
+    .tile-state-completed {
+      background-color: #84cc16;
+    }
+  }
 }
 
 .boat {
-	box-sizing: border-box;
-	background-color: red;
-	//position: absolute;
-	border:1px solid tomato;
-	//opacity: 0.9;
-	cursor: move;
-	user-select: none;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 10px;
+  box-sizing: border-box;
+  background-color: red;
+  //position: absolute;
+  border: 1px solid tomato;
+  //opacity: 0.9;
+  cursor: move;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 
-	//color: transparent;
+  //color: transparent;
 }

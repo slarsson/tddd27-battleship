@@ -38,7 +38,8 @@ const Game = () => {
       state.enemyGrid = msg.boards[1];
       state.yourTurn = msg.yourTurn;
       state.boats = msg.boats;
-
+      state.myScore = msg.myScore;
+      state.enemyScore = msg.enemyScore;
       state.myName = msg.myName;
       state.enemyName = msg.enemyName;
       setGame(state);
@@ -50,9 +51,13 @@ const Game = () => {
   };
 
   useEffect(() => {
+    console.log('hej?');
+
     ws(WS_URL, onMessage, onError).then((fn) => {
       console.log('first');
       send.current = fn;
+      console.log(game);
+
       fn({
         type: MessageType.Connect,
         gameId: game.gameId,
@@ -94,17 +99,27 @@ const Game = () => {
               <PlaceBoats></PlaceBoats>
             </div>
           ) : null}
-          {game.view == GameState.ShootBoats ? (
+          {game.view == GameState.ShootBoats || game.view == GameState.Completed ? (
             <div className="shoot-boat-wrapper">
               <ShootBoats send={send.current}>
                 <div className="game-info">
                   <div className="score">
-                    <span>{game.myName}</span> vs <span>{game.enemyName}</span>
+                    <span>
+                      {game.myName}: {game.myScore}
+                    </span>{' '}
+                    vs{' '}
+                    <span>
+                      {game.enemyName}: {game.enemyScore}
+                    </span>
                   </div>
                 </div>
-                <div className="game-info">
-                  <div className={`status ${game.yourTurn ? 'ok' : 'waiting'}`}>{game.yourTurn ? `It's your turn!` : `Waiting for other player`}</div>
-                </div>
+                {game.view == GameState.Completed ? (
+                  <div className="game-info">GAME OVER</div>
+                ) : (
+                  <div className="game-info">
+                    <div className={`status ${game.yourTurn ? 'ok' : 'waiting'}`}>{game.yourTurn ? `It's your turn!` : `Waiting for other player`}</div>
+                  </div>
+                )}
               </ShootBoats>
             </div>
           ) : null}

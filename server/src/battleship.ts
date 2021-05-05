@@ -18,6 +18,8 @@ interface State {
   boats: number[];
   boatsPlaced: boolean[];
   boards: number[][][];
+  positions: Map<number, number[]>[];
+  score: number[];
 }
 
 const defaultGrid = (size: number, state: TileState): number[] => {
@@ -40,12 +42,15 @@ class Battleship {
       gameState: GameState.WaitingForPlayers,
       names: ['', ''],
       turn: 0,
-      boats: [2, 3, 3, 4, 5],
+      boats: [2],
+      //boats: [2, 3, 3, 4, 5],
       boatsPlaced: [false, false],
       boards: [
         [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
         [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
       ],
+      positions: [new Map<number, number[]>(), new Map<number, number[]>()],
+      score: [0, 0],
     };
   }
 
@@ -85,12 +90,14 @@ class Battleship {
     } else {
       return;
     }
+
     this.connections[player] = ws;
 
     // Both connected
     if (this.connections[0] !== null && this.connections[1] !== null) {
-      if (this.state.gameState != GameState.WaitingForPlayers) return;
-      this.state.gameState = GameState.PlaceBoats;
+      if (this.state.gameState == GameState.WaitingForPlayers) {
+        this.state.gameState = GameState.PlaceBoats;
+      }
     }
 
     if (this.connections[0] !== null) {
@@ -103,7 +110,7 @@ class Battleship {
   }
 
   private broadcast(player: number, msg: any, all: boolean = false) {
-    console.log('???', msg);
+    //console.log('???', msg);
 
     for (let i = 0; i < this.connections.length; i++) {
       if (all || i === player) {
@@ -133,8 +140,37 @@ class Battleship {
 
         if (this.state.gameState != GameState.PlaceBoats) return;
 
+        const grid = msg.grid;
+
+        if (grid.length != 100) return;
+
+        let ids = this.state.boats.map((v, i) => 100 + i);
+        ids.push(TileState.Empty);
+
+        for (let i = 0; i < grid.length; i++) {
+          if (!ids.includes(grid[i])) return;
+        }
+
         // TODO: check
-        this.state.boards[player][0] = msg.grid;
+        // this.state.boards[player][0] = msg.grid;
+
+        for (let i = 0; i < this.state.boats.length; i++) {
+          const id = 100 + i;
+          let indices = [];
+          for (let j = 0; j < grid.length; j++) {
+            if (id == grid[j]) {
+              indices.push(j);
+            }
+          }
+
+          if (indices.length == 0) {
+            this.state.positions[player].clear();
+            return;
+          }
+          this.state.positions[player].set(id, indices);
+        }
+
+        this.state.boards[player][0] = grid;
         this.state.boatsPlaced[player] = true;
 
         if (this.state.boatsPlaced[player == 0 ? 1 : 0]) {
@@ -164,12 +200,40 @@ class Battleship {
     let p2 = player == 0 ? 1 : 0;
 
     if (this.state.boards[p2][0][index] >= 100) {
-      this.state.boards[player][1][index] = TileState.Hit;
+      const id = this.state.boards[p2][0][index];
+      const indices = this.state.positions[p2].get(id);
+      if (indices == undefined) return;
+
+      let completed = true;
+      for (let i = 0; i < indices.length; i++) {
+        let idx = indices[i];
+        if (index == idx) continue;
+        if (this.state.boards[p2][0][idx] != TileState.HitOnBoat) {
+          completed = false;
+          break;
+        }
+      }
+
+      if (completed) {
+        this.state.score[player]++;
+
+        if (this.state.score[player] == this.state.positions[p2].size) {
+          this.state.gameState = GameState.Completed;
+        }
+
+        for (let i = 0; i < indices.length; i++) {
+          this.state.boards[player][1][indices[i]] = TileState.BoatCompleted;
+        }
+      } else {
+        this.state.boards[player][1][index] = TileState.Hit;
+      }
       this.state.boards[p2][0][index] = TileState.HitOnBoat;
     } else {
       this.state.boards[player][1][index] = TileState.Miss;
       this.state.boards[p2][0][index] = TileState.Miss;
     }
+
+    //this.state.boards[player][1][index] = TileState.BoatCompleted;
 
     this.state.turn = this.state.turn == 0 ? 1 : 0;
     for (let i = 0; i < this.connections.length; i++) {
@@ -178,11 +242,14 @@ class Battleship {
   }
 
   private sendStateUpdate(player: number) {
+    const p2 = player == 0 ? 1 : 0;
     let msg: StateUpdate = {
       type: MessageType.StateUpdate,
       gameState: this.state.gameState,
       myName: this.state.names[player],
-      enemyName: this.state.names[player == 0 ? 1 : 0],
+      myScore: this.state.score[player],
+      enemyName: this.state.names[p2],
+      enemyScore: this.state.score[p2],
       yourTurn: player == this.state.turn,
       boards: this.state.boards[player],
       boats: this.state.boats,

@@ -1,5 +1,5 @@
-import { atom, selector } from "recoil";
-import { GameState as GlobalGameState } from "../../../interfaces/index";
+import { atom, selector } from 'recoil';
+import { GameState as GlobalGameState } from '../../../interfaces/index';
 
 /* Global state store "gameId" and "token"  */
 interface GameState {
@@ -8,7 +8,7 @@ interface GameState {
 }
 
 /* Test */
-interface CurrentGame {
+export interface CurrentGame {
   alive: boolean;
   gameId: string;
   token: string;
@@ -18,7 +18,9 @@ interface CurrentGame {
   yourTurn: boolean;
   boats: number[];
   myName: string;
+  myScore: number;
   enemyName: string;
+  enemyScore: number;
 }
 
 interface GameStates {
@@ -27,7 +29,7 @@ interface GameStates {
 
 /* Test */
 export const currentGameState = atom<CurrentGame>({
-  key: "currentGame",
+  key: 'currentGame',
   default: {
     alive: false,
     gameId: '',
@@ -38,16 +40,18 @@ export const currentGameState = atom<CurrentGame>({
     yourTurn: false,
     boats: [],
     myName: '',
-    enemyName: ''
-  }
+    myScore: 0,
+    enemyName: '',
+    enemyScore: 0,
+  },
 });
 
 export const gameStates = atom<GameStates>({
-  key: "gameStates",
-  default: {}
+  key: 'gameStates',
+  default: {},
 });
 
 export const sendActionState = atom<() => any>({
   key: 'sendActionState',
-  default: () => { }
+  default: () => {},
 });
