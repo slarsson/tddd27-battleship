@@ -8,6 +8,7 @@ import { currentGameState } from '../../atoms/game';
 import { GameState } from '../../../../interfaces';
 import { write } from '../../lib/storage';
 import { newGame } from '../../lib/game';
+import logo from '../../assets/logo.svg';
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 export const Home = () => {
@@ -86,8 +87,7 @@ export const Home = () => {
   return (
     <div className="container">
       <div>
-        <img src={battleship} className="img"></img>
-        <h1 className="header">Battleship</h1>
+        <img src={logo} className="img" />
       </div>
 
       <div className="button-container">
