@@ -52,7 +52,7 @@ export const GameHandler = () => {
       let data = await res.json();
 
       // Game exists
-      if (data.ok) {
+      if (res.status == 200) {
         setLoading(false);
       } else {
         alert('No game buddy');

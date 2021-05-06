@@ -4,4 +4,13 @@ const validateName = (name: string): boolean => {
   return re.test(name);
 };
 
-export { validateName };
+const randomId = (n: number): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTVWZYX123456789';
+  let id = '';
+  for (let i = 0; i < n; i++) {
+    id += chars[Math.trunc(Math.random() * chars.length)];
+  }
+  return id;
+};
+
+export { validateName, randomId };
