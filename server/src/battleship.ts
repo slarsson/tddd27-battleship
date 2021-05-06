@@ -1,10 +1,7 @@
 import { MessageType, TileState, GameState, StateUpdate } from '../../interfaces';
+import { defaultGrid } from './helpers';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
-
-interface Connection {
-  [key: string]: WebSocket;
-}
 
 interface Tokens {
   p1: string;
@@ -22,10 +19,6 @@ interface State {
   score: number[];
 }
 
-const defaultGrid = (size: number, state: TileState): number[] => {
-  return new Array(size * size).fill(state);
-};
-
 class Battleship {
   private activated: boolean = false;
   private id: string;
@@ -42,8 +35,7 @@ class Battleship {
       gameState: GameState.WaitingForPlayers,
       names: ['', ''],
       turn: 0,
-      boats: [2],
-      //boats: [2, 3, 3, 4, 5],
+      boats: [2, 3, 3, 4, 5],
       boatsPlaced: [false, false],
       boards: [
         [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
@@ -69,15 +61,19 @@ class Battleship {
     this.activated = true;
   }
 
-  public setName(token: string, name: string) {
-    if (token != this.p1 && token != this.p2) return;
+  // TODO: does this work?
+  public setName(token: string, name: string): boolean {
+    if (token != this.p1 && token != this.p2) return false;
 
-    let index: number = 0;
+    let player: number = 0;
+    let p2: number = 1;
     if (token == this.p2) {
-      index = 1;
+      player = 1;
+      p2 = 0;
     }
 
-    this.state.names[index] = name;
+    if (this.state.names[p2] == name) return false;
+    this.state.names[player] = name;
     return true;
   }
 
@@ -93,7 +89,6 @@ class Battleship {
 
     this.connections[player] = ws;
 
-    // Both connected
     if (this.connections[0] !== null && this.connections[1] !== null) {
       if (this.state.gameState == GameState.WaitingForPlayers) {
         this.state.gameState = GameState.PlaceBoats;
@@ -109,15 +104,8 @@ class Battleship {
     }
   }
 
-  private broadcast(player: number, msg: any, all: boolean = false) {
-    //console.log('???', msg);
-
-    for (let i = 0; i < this.connections.length; i++) {
-      if (all || i === player) {
-        // HANDLE ERRORS
-        this.connections[i]?.send(JSON.stringify(msg));
-      }
-    }
+  private broadcast(player: number, msg: any) {
+    this.connections[player]?.send(JSON.stringify(msg));
   }
 
   public handler(msg: any) {
@@ -232,8 +220,6 @@ class Battleship {
       this.state.boards[player][1][index] = TileState.Miss;
       this.state.boards[p2][0][index] = TileState.Miss;
     }
-
-    //this.state.boards[player][1][index] = TileState.BoatCompleted;
 
     this.state.turn = this.state.turn == 0 ? 1 : 0;
     for (let i = 0; i < this.connections.length; i++) {

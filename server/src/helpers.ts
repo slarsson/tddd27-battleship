@@ -1,3 +1,5 @@
+import { TileState } from '../../interfaces';
+
 const validateName = (name: string): boolean => {
   if (name.length > 10) return false;
   const re = new RegExp(/^[0-9a-zA-Z]+$/);
@@ -13,4 +15,8 @@ const randomId = (n: number): string => {
   return id;
 };
 
-export { validateName, randomId };
+const defaultGrid = (size: number, state: TileState): number[] => {
+  return new Array(size * size).fill(state);
+};
+
+export { validateName, randomId, defaultGrid };
