@@ -9,15 +9,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-            fetch-depth: 0
-    
-    # TODO: correct author of commits?
+          fetch-depth: 0
+
+      # TODO: correct author of commits?
       - name: Mirror to gitlab.liu.se
         env:
-            GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-            git config --global user.name 'Samuel Larsson'
-            git config --global user.email 'samlarsson94@gmail.com'
-            git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/tddd27.git
-            git push mirror ${GITHUB_HEAD_REF}
-
+          git config --global user.name 'Samuel Larsson'
+          git config --global user.email 'samlarsson94@gmail.com'
+          git remote add mirror https://samla949:$GITLAB_TOKEN@gitlab.liu.se/samla949/tddd27.git
+          git push mirror ${GITHUB_HEAD_REF} --force

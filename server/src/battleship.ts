@@ -35,7 +35,7 @@ class Battleship {
       gameState: GameState.WaitingForPlayers,
       names: ['', ''],
       turn: 0,
-      boats: [1], //[2, 3, 3, 4, 5],
+      boats: [2, 3, 3, 4, 5],
       boatsPlaced: [false, false],
       boards: [
         [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
