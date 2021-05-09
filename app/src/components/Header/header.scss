@@ -1,0 +1,29 @@
+.game-header {
+  padding: 10px;
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    background-color: transparent;
+    border: 0;
+    line-height: 0;
+    cursor: pointer;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      fill: #ededed;
+    }
+  }
+
+  img {
+    width: 180px;
+  }
+
+  .space {
+    width: 30px;
+  }
+}

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { Input } from '..';
-import { GameState } from '../../../../interfaces';
 import { currentGameState } from '../../atoms/game';
 import { newGame } from '../../lib/game';
+import './selectName.scss';
 
 import { write } from '../../lib/storage';
 const API_URL = import.meta.env.VITE_API_URL as string;
@@ -50,5 +50,10 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
     }
   };
 
-  return <Input placeHolder={'Player name'} setInputValue={setPlayer2Name} buttonText={'Join'} loading={loading} onSubmit={joinPlayer} />;
+  return (
+    <div className="content">
+      <h2 className="gameid">Player name</h2>
+      <Input placeHolder={'Jon Doe'} setInputValue={setPlayer2Name} buttonText={'Join'} loading={loading} onSubmit={joinPlayer} />
+    </div>
+  );
 };
