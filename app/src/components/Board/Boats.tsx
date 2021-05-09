@@ -23,10 +23,10 @@ const Boats = () => {
   const boats = useRecoilValue(boatsState);
 
   return (
-    <div style={{top: 0, left: 0, position: 'absolute'}}>
+    <div style={{ top: 0, left: 0, position: 'absolute' }}>
       {boats.map((b, i) => {
         return (
-          <div 
+          <div
             key={'boatz' + i}
             className="boat"
             style={{
@@ -35,18 +35,18 @@ const Boats = () => {
               top: `${b.y}px`,
               left: `${b.x}px`,
               transition: b.transition,
-              position: 'absolute'
+              position: 'absolute',
+              outline: b.move ? '5px solid blue' : 'none',
+              zIndex: b.move ? 9999 : 0,
             }}
           >
             {/* {b.x} - {b.y} */}
           </div>
-        )
+        );
       })}
     </div>
   );
 };
 
 export default Boats;
-export type {
-  Boat
-}
+export type { Boat };

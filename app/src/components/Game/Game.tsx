@@ -34,6 +34,7 @@ const Game = () => {
     if (msg.type == MessageType.StateUpdate) {
       let state = { ...game };
       state.view = msg.gameState;
+      //state.view = GameState.PlaceBoats;
       state.myGrid = msg.boards[0];
       state.enemyGrid = msg.boards[1];
       state.yourTurn = msg.yourTurn;
