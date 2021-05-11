@@ -203,59 +203,58 @@ const useGrid = (size: number, area: Box): number[] => {
     });
   };
 
-  const random = () => {
-    // clear grid
-    for (let i = 0; i < state.current.grid.length; i++) {
-      state.current.grid[i] = 0;
-    }
+  const randomEmptySlot = (index: number) => {
+    Main: for (;;) {
+      const gridIndex = Math.trunc(Math.random() * state.current.grid.length);
+      const endRowIndex = gridIndex + (state.current.boats[index].height - 1) * size;
+      const endColIndex = gridIndex + state.current.boats[index].width - 1;
 
-    Main: for (let i = 0; i < state.current.boats.length; i++) {
-      const index = Math.trunc(Math.random() * state.current.grid.length);
-      const endRowIndex = index + (state.current.boats[i].height - 1) * size;
-      const endColIndex = index + state.current.boats[i].width - 1;
-
-      const startRow = Math.trunc(index / size);
+      const startRow = Math.trunc(gridIndex / size);
       const endRow = Math.trunc(endRowIndex / size);
-      const startCol = index % size;
+      const startCol = gridIndex % size;
       const endCol = endColIndex % size;
 
-      if (endRow >= size) {
-        i--;
-        continue;
-      }
-
-      if (endCol < startCol) {
-        i--;
-        continue;
-      }
+      if (endRow >= size) continue;
+      if (endCol < startCol) continue;
 
       // collision col
-      for (let j = index; j <= endColIndex; j++) {
+      for (let j = gridIndex; j <= endColIndex; j++) {
         if (state.current.grid[j] != 0) {
-          i--;
           continue Main;
         }
       }
 
       // collision row
-      for (let j = index; j <= endRowIndex; j += size) {
+      for (let j = gridIndex; j <= endRowIndex; j += size) {
         if (state.current.grid[j] != 0) {
-          i--;
           continue Main;
         }
       }
 
-      const id = state.current.boats[i].id;
-      for (let j = 0; j < state.current.boats[i].width; j++) {
-        state.current.grid[index + j] = id;
+      const id = state.current.boats[index].id;
+      for (let j = 0; j < state.current.boats[index].width; j++) {
+        state.current.grid[gridIndex + j] = id;
       }
 
-      for (let j = 0; j < state.current.boats[i].height; j++) {
-        state.current.grid[index + j * size] = id;
+      for (let j = 0; j < state.current.boats[index].height; j++) {
+        state.current.grid[gridIndex + j * size] = id;
       }
 
       const x = state.current.area.x + state.current.tileSize * startCol;
       const y = state.current.area.y + state.current.tileSize * startRow;
+
+      return { x, y };
+    }
+  };
+
+  const random = () => {
+    for (let i = 0; i < state.current.grid.length; i++) {
+      state.current.grid[i] = 0;
+    }
+
+    Main: for (let i = 0; i < state.current.boats.length; i++) {
+      const { x, y } = randomEmptySlot(i);
+
       state.current.boats[i].x = x;
       state.current.boats[i].y = y;
       state.current.boats[i].originX = x;
@@ -304,6 +303,41 @@ const useGrid = (size: number, area: Box): number[] => {
     setBoats(newBoats);
   };
 
+  const rotate = (evt: KeyboardEvent) => {
+    if (evt.key != 'r') return;
+
+    let index = state.current.selected;
+    if (index == -1) return;
+
+    let boat = state.current.boats[index];
+
+    const offsetX = boat.mouseOffsetX;
+    const offsetY = boat.mouseOffsetY;
+    const pageX = boat.x + boat.mouseOffsetX;
+    const pageY = boat.y + boat.mouseOffsetY;
+
+    [boat.height, boat.width] = [boat.width, boat.height];
+
+    boat.x = pageX - offsetY;
+    boat.y = pageY - offsetX;
+    boat.mouseOffsetX = offsetY;
+    boat.mouseOffsetY = offsetX;
+
+    const { x, y } = randomEmptySlot(index);
+    boat.originX = x;
+    boat.originY = y;
+    boat.targetX = x;
+    boat.targetY = y;
+
+    for (let i = 0; i < state.current.grid.length; i++) {
+      if (state.current.grid[i] != boat.id) continue;
+      state.current.grid[i] = 0;
+    }
+
+    setBoats(clone(state.current.boats));
+    setGrid([...state.current.grid]);
+  };
+
   const exportGrid = () => {
     return [...state.current.grid];
   };
@@ -316,6 +350,7 @@ const useGrid = (size: number, area: Box): number[] => {
     window.addEventListener('touchstart', touchstart);
     window.addEventListener('touchend', up);
     window.addEventListener('touchcancel', up);
+    window.addEventListener('keydown', rotate);
 
     setGridActions({ random: random, export: exportGrid, setBoats: loadBoats });
 
@@ -327,6 +362,7 @@ const useGrid = (size: number, area: Box): number[] => {
       window.removeEventListener('touchstart', touchstart);
       window.removeEventListener('touchend', up);
       window.removeEventListener('touchcancel', up);
+      window.removeEventListener('keydown', rotate);
     };
   }, []);
 
