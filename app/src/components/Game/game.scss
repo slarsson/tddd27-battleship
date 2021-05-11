@@ -141,6 +141,54 @@
     }
   }
 
+  .place-boat-actions {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    button {
+      padding: 10px 15px 10px 15px;
+      border-radius: 50px;
+      margin: 0px 10px 0px 10px;
+      border: none;
+      background-color: red;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        margin-left: 10px;
+      }
+    }
+
+    .send {
+      background-color: #84cc16;
+
+      &:hover {
+        background-color: #9ee82d;
+      }
+    }
+
+    .random {
+      background-color: #6074ff;
+      color: #fff;
+
+      &:hover {
+        background-color: #7889ff;
+      }
+
+      svg {
+        fill: #fff;
+      }
+    }
+  }
+
   .game-info {
     display: flex;
     justify-content: center;

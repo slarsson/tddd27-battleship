@@ -122,15 +122,9 @@
 .boat {
   box-sizing: border-box;
   background-color: red;
-  //position: absolute;
   border: 1px solid tomato;
-  //opacity: 0.9;
   cursor: move;
   user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
 
-  //color: transparent;
+  //box-shadow: 0px 0px 10px 5px gold;
 }

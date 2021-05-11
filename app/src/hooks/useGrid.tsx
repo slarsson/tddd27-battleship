@@ -62,8 +62,6 @@ const useGrid = (size: number, area: Box): number[] => {
     let index = state.current.selected;
     if (index == -1) return;
 
-    console.log(state.current.area.y);
-
     // mutable object
     let boat = state.current.boats[index];
 
@@ -143,7 +141,7 @@ const useGrid = (size: number, area: Box): number[] => {
       break;
     }
 
-    console.log('found', state.current.selected);
+    //console.log('found', state.current.selected);
 
     let index = state.current.selected;
     if (index == -1) return;

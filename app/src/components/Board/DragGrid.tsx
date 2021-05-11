@@ -38,7 +38,7 @@ const DragGrid = ({ size, tileSize }: Props) => {
     <div ref={div} style={{ outline: 'none' }}>
       {grid.map((v, i) => {
         return (
-          <div style={{ width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v > 99 ? '#BEF264' : 'transparent' }} className="tile" key={'grid-' + i}>
+          <div style={{ width: `${tileSize}px`, height: `${tileSize}px`, backgroundColor: v > 99 ? '#878e9b' : 'transparent' }} className="tile" key={'grid-' + i}>
             {/* {v != 0 ? v : null} */}
           </div>
         );

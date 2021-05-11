@@ -68,16 +68,22 @@ export const Home = () => {
           gameId: gameId,
         }),
       });
-      let data = await res.json();
 
-      // Game exists
-      if (data.ok) {
-        setLoading(false);
+      if (res.status == 200) {
         history.push(`/g/${gameId}`);
+        return;
       } else {
         setLoading(false);
-        alert('No game asdasd');
+        alert('no game found');
       }
+      // // Game exists
+      // if (data.ok) {
+      //   setLoading(false);
+      //   history.push(
+      // } else {
+      //   setLoading(false);
+      //   alert('No game asdasd');
+      // }
     } catch (e) {
       console.log('err...', e);
       setLoading(false);

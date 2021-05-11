@@ -30,13 +30,13 @@ const Boats = () => {
             key={'boatz' + i}
             className="boat"
             style={{
-              width: `${b.width * tileSize}px`,
-              height: `${b.height * tileSize}px`,
+              width: `${b.width * tileSize - 1}px`,
+              height: `${b.height * tileSize - 1}px`,
               top: `${b.y}px`,
               left: `${b.x}px`,
               transition: b.transition,
               position: 'absolute',
-              outline: b.move ? '5px solid blue' : 'none',
+              boxShadow: b.move ? '0px 0px 10px 5px rgba(250, 250, 250, .4)' : 'none',
               zIndex: b.move ? 9999 : 0,
             }}
           >

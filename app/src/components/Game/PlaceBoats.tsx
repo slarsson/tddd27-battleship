@@ -49,7 +49,7 @@ const PlaceBoats = () => {
       <Boats></Boats>
       <div className="place-boats-container" ref={div}>
         <Board type={GridType.Drag} maxWidth={maxWidth}></Board>
-        <button onClick={() => grid.random()}>RANDOM</button>
+        {/* <button onClick={() => grid.random()}>RANDOM</button> */}
       </div>
     </div>
   );
