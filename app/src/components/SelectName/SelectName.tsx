@@ -52,8 +52,12 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
 
   return (
     <div className="content">
-      <h2 className="gameid">Player name</h2>
-      <Input placeHolder={'Jon Doe'} setInputValue={setPlayer2Name} buttonText={'Join'} loading={loading} onSubmit={joinPlayer} />
+      <form>
+        <label htmlFor="playername-input" className="gameid">
+          Player name
+        </label>
+        <Input placeHolder={'Jon Doe'} setInputValue={setPlayer2Name} buttonText={'Join'} loading={loading} onSubmit={joinPlayer} />
+      </form>
     </div>
   );
 };

@@ -239,6 +239,7 @@ class Battleship {
       yourTurn: player == this.state.turn,
       boards: this.state.boards[player],
       boats: this.state.boats,
+      done: this.state.boatsPlaced[player],
     };
     this.broadcast(player, msg);
   }

@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 
 import './modal.scss';
 
 interface ModalProps {
   children: React.ReactNode;
   visible: boolean;
+  setVisible?: (value: boolean) => void;
+  disabled?: boolean;
 }
 
-const Modal = ({ children, visible }: ModalProps) => {
-  const [hidden, setHidden] = useState<boolean>(false);
-   
-  useEffect(() => {
-    setHidden(!visible);
-  }, [visible]);
+const Modal = ({ children, visible, setVisible, disabled }: ModalProps) => {
+  const close = (evt: any) => {
+    if (disabled) return;
 
-  const close = () => setHidden(true); // REMOVE!!!!!
+    console.log(evt.target.id);
+    if (evt.target.id == 'modal-container' && setVisible) {
+      setVisible(false);
+    }
+  };
 
-  if (hidden) return <></>;
+  if (!visible) return <></>;
 
   return (
-    <div className="modal-container" onClick={() => close()}>
-      <div className="modal-window">
-        {children}
-      </div>
+    <div id="modal-container" className="modal-container" onClick={close}>
+      <div className="modal-window">{children}</div>
     </div>
   );
 };

@@ -13,4 +13,5 @@ export interface StateUpdate extends OutgoingMessage {
   yourTurn: boolean;
   boards: number[][];
   boats: number[];
+  done: boolean;
 }

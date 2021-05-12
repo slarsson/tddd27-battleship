@@ -1,3 +1,12 @@
+@keyframes easein {
+  from {
+    opacity: 0.05;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .game-error {
   position: absolute;
   backdrop-filter: blur(5px);
@@ -6,15 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  @keyframes easein {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+  z-index: 100;
 
   .game-error-window {
     background-color: rgb(231, 93, 68);
@@ -159,11 +160,13 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      color: #fff;
 
       svg {
         width: 24px;
         height: 24px;
         margin-left: 10px;
+        fill: #fff;
       }
     }
 
@@ -177,14 +180,9 @@
 
     .random {
       background-color: #6074ff;
-      color: #fff;
 
       &:hover {
         background-color: #7889ff;
-      }
-
-      svg {
-        fill: #fff;
       }
     }
   }
@@ -289,4 +287,71 @@
   .game-shoot-info {
     width: 100%;
   }
+}
+
+.waiting-modal {
+  display: flex;
+  align-items: center;
+  background-color: #fec514;
+  padding: 25px;
+  color: #000;
+  animation-name: easein;
+  animation-duration: 0.5s;
+
+  svg {
+    fill: #000;
+    width: 36px;
+    height: 36px;
+    margin-right: 12px;
+  }
+}
+
+.gameover-modal {
+  background-color: gold;
+  color: #000;
+  animation-name: easein;
+  animation-duration: 0.5s;
+
+  .gameover-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 5px 0 5px;
+
+    button {
+      border: 0;
+      line-height: 0;
+      cursor: pointer;
+      background-color: transparent;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .gameover-content {
+    text-align: center;
+    padding: 0 40px 40px 40px;
+  }
+
+  h2 {
+    font-size: 42px;
+  }
+
+  p {
+    max-width: 150px;
+    margin: auto;
+  }
+
+  svg {
+    align-self: center;
+    fill: #000;
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.loser {
+  background-color: red;
 }

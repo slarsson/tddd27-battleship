@@ -1,18 +1,17 @@
-import React, { RefObject, useEffect, useRef } from "react";
-import "./input.scss"
-import { Loader } from "..";
+import React, { RefObject, useEffect, useRef } from 'react';
+import './input.scss';
+import { Loader } from '..';
 
 interface InputProps {
-    setToggler?: (value: boolean) => void;
-    placeHolder: string;
-    setInputValue: (value: string) => void;
-    buttonText: string;
-    loading: boolean;
-    onSubmit: () => void;
+  setToggler?: (value: boolean) => void;
+  placeHolder: string;
+  setInputValue: (value: string) => void;
+  buttonText: string;
+  loading: boolean;
+  onSubmit: () => void;
 }
 
 export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, loading, onSubmit }: InputProps) => {
-  
   const useOutsideAlerter = (ref: any) => {
     useEffect(() => {
       function handleClickOutside(e: MouseEvent) {
@@ -20,12 +19,12 @@ export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, load
           setToggler(true);
         }
       }
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
       };
     }, [ref]);
-  }
+  };
 
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
@@ -34,9 +33,10 @@ export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, load
     <div className="input-container" ref={wrapperRef}>
       <input
         className="input-field"
+        id="playername-input"
         placeholder={placeHolder}
         onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            setInputValue(e.currentTarget.value);
+          setInputValue(e.currentTarget.value);
         }}
       ></input>
       <button
@@ -47,11 +47,7 @@ export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, load
           onSubmit();
         }}
       >
-        {loading ? (
-          <Loader loaderSize={"3px solid #1D4ED8"} />
-        ) : (
-            buttonText
-        )}
+        {loading ? <Loader loaderSize={'3px solid #1D4ED8'} /> : buttonText}
       </button>
     </div>
   );
