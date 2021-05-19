@@ -11,7 +11,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: correct author of commits?
       - name: Mirror to gitlab.liu.se
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}

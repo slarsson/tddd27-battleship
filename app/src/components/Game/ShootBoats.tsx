@@ -60,7 +60,7 @@ const ShootBoats = ({ children, send }: ShootBoatsProps) => {
   } else if (div.current.clientWidth > 800) {
     buttons = <></>;
     nodes = (
-      <>
+      <div className="game-shoot-xl">
         <div>
           <Board type={GridType.View} maxWidth={maxWidth} grid={game.enemyGrid} handler={onShoot}></Board>
           <p>Enemy board</p>
@@ -69,14 +69,18 @@ const ShootBoats = ({ children, send }: ShootBoatsProps) => {
           <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
           <p>Your board</p>
         </div>
-      </>
+      </div>
     );
   } else {
     buttons = (
-      <div className="game-shoot-switch">
-        <button onClick={() => setCurrent('left')}>ENEMY</button>
-        <button onClick={() => setCurrent('right')}>MYSELF</button>
-      </div>
+      <>
+        <button onClick={() => setCurrent('left')} className={current == 'left' ? 'active' : ''}>
+          ENEMY BOARD
+        </button>
+        <button onClick={() => setCurrent('right')} className={current == 'right' ? 'active' : ''}>
+          MY BOARD
+        </button>
+      </>
     );
 
     if (current == 'left') {
@@ -97,15 +101,13 @@ const ShootBoats = ({ children, send }: ShootBoatsProps) => {
   }
 
   return (
-    <>
-      <div className="game-shoot-container" ref={div}>
-        <div className="game-shoot-wrapper">
-          <div className="game-shoot-info">{children}</div>
-          {nodes}
-        </div>
+    <div className="game-shoot-container" ref={div}>
+      <div className="game-shoot-board">
+        <div className="game-shoot-header">{children}</div>
+        {nodes}
       </div>
-      {buttons}
-    </>
+      <div className="game-shoot-switch">{buttons}</div>
+    </div>
   );
 };
 

@@ -60,7 +60,7 @@ const Game = () => {
 
         let state = { ...value };
         state.view = msg.gameState;
-        //state.view = GameState.PlaceBoats;
+        //state.view = GameState.ShootBoats;
         state.myGrid = msg.boards[0];
         state.enemyGrid = msg.boards[1];
         state.yourTurn = msg.yourTurn;
@@ -199,28 +199,27 @@ const Game = () => {
               </div>
             ) : null}
             {game.view == GameState.ShootBoats || game.view == GameState.Completed ? (
-              <div className="shoot-boat-wrapper">
-                <ShootBoats send={send.current}>
-                  <div className="game-info">
+              <ShootBoats send={send.current}>
+                <div className="game-info">
+                  <div>
+                    <div className="player-info">
+                      <div>{game.myName}</div>
+                      <div>vs</div>
+                      <div>{game.enemyName}</div>
+                    </div>
                     <div className="score">
-                      <span>
-                        {game.myName}: {game.myScore}
-                      </span>{' '}
-                      vs{' '}
-                      <span>
-                        {game.enemyName}: {game.enemyScore}
-                      </span>
+                      {game.myScore} - {game.enemyScore}
                     </div>
                   </div>
-                  {game.view == GameState.Completed ? (
-                    <div className="game-info">GAME OVER {gameOver}</div>
-                  ) : (
-                    <div className="game-info">
-                      <div className={`status ${game.yourTurn ? 'ok' : 'waiting'}`}>{game.yourTurn ? `It's your turn!` : `Waiting for other player`}</div>
-                    </div>
-                  )}
-                </ShootBoats>
-              </div>
+                </div>
+                {game.view == GameState.Completed ? (
+                  <div className="game-info">GAME OVER {gameOver}</div>
+                ) : (
+                  <div className="game-info">
+                    <div className={`status ${game.yourTurn ? 'ok' : 'waiting'}`}>{game.yourTurn ? `It's your turn!` : `Waiting for other player`}</div>
+                  </div>
+                )}
+              </ShootBoats>
             ) : null}
           </div>
         )}
