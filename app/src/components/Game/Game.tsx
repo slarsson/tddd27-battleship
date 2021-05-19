@@ -40,7 +40,6 @@ const Game = () => {
   };
 
   const onMessage = (msg: any) => {
-    //console.log('msg:', msg);
     if (msg.type == MessageType.StateUpdate) {
       setGame((value) => {
         if (msg.gameState == GameState.PlaceBoats) {
@@ -60,7 +59,6 @@ const Game = () => {
 
         let state = { ...value };
         state.view = msg.gameState;
-        //state.view = GameState.ShootBoats;
         state.myGrid = msg.boards[0];
         state.enemyGrid = msg.boards[1];
         state.yourTurn = msg.yourTurn;
@@ -69,7 +67,6 @@ const Game = () => {
         state.enemyScore = msg.enemyScore;
         state.myName = msg.myName;
         state.enemyName = msg.enemyName;
-
         return state;
       });
     }
@@ -94,6 +91,7 @@ const Game = () => {
     });
 
     return () => {
+      console.log('CLOSE CONNECTION');
       if (closeHandler) closeHandler();
     };
   }, []);
@@ -171,9 +169,12 @@ const Game = () => {
             {game.view == GameState.PlaceBoats ? (
               <div className="game-wrapper">
                 <div className="game-info">
-                  <span>{game.myName}</span> vs <span>{game.enemyName}</span>
+                  <div className="player-info">
+                    <div>{game.myName}</div>
+                    <div>vs</div>
+                    <div>{game.enemyName}</div>
+                  </div>
                 </div>
-
                 <div className="game-info">
                   <p>
                     Place your boats on the grid. Press <kbd>R</kbd> to rotate.

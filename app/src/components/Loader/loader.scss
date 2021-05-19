@@ -1,31 +1,54 @@
 // Loading-symbol
+.loading {
+  width: 100%;
+  height: 100%;
+}
+.spinner {
+  background: transparent;
+  font-size: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  padding: 0;
+  border: 3px solid transparent;
+  animation-name: loading;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
 
-#loading {
-    width: 100%;
-    height: 100%;
-
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
   }
-  .spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingx {
+  width: 100%;
+  height: 100%;
+
+  .spinnerx {
     background: transparent;
     font-size: 0;
     width: 100%;
     height: 100%;
     border-radius: 100%;
     padding: 0;
-    border: 3px solid transparent;
-    //border-bottom: 3px solid #1D4ED8;
-    //border-left: 3px solid #1D4ED8;
+    border: 0px solid transparent;
     animation-name: loading;
     animation-duration: 0.7s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }
-  
-  @keyframes loading {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+}
+
+.loading-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

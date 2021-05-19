@@ -67,7 +67,7 @@ const ShootBoats = ({ children, send }: ShootBoatsProps) => {
         </div>
         <div>
           <Board type={GridType.View} maxWidth={maxWidth} grid={game.myGrid}></Board>
-          <p>Your board</p>
+          <p>My board</p>
         </div>
       </div>
     );

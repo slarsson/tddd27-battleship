@@ -38,6 +38,12 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
           gameId: activeGameId,
         }),
       });
+
+      if (res.status != 200) {
+        alert('TODO: FIX THIS FFS!');
+        return;
+      }
+
       let data = await res.json();
 
       // new given token to player2

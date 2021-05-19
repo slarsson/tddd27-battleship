@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './index.scss';
-import { Home, HowTo, Test, GameHandler } from './pages';
+import { Home, HowTo, GameHandler } from './pages';
 import { Navbar } from './components';
 
 import { RecoilRoot } from 'recoil';
@@ -24,10 +24,6 @@ export default function App() {
       path: '/how-to',
       name: 'How to',
     },
-    {
-      path: '/test',
-      name: 'test',
-    },
   ];
 
   return (
@@ -45,7 +41,11 @@ export default function App() {
               <HowTo></HowTo>
             </Layout>
           </Route>
-          <Route exact path="/test" component={Test} />
+          <Route>
+            <Layout links={navLinks}>
+              <NotFound></NotFound>
+            </Layout>
+          </Route>
         </Switch>
       </Router>
     </RecoilRoot>
@@ -68,5 +68,13 @@ const Layout = ({ children, links }: LayoutProps) => {
       <Navbar navLinks={links} />
       <div>{children}</div>
     </>
+  );
+};
+
+const NotFound = () => {
+  return (
+    <div className="not-found">
+      <h1>404 - PAGE NOT FOUND</h1>
+    </div>
   );
 };

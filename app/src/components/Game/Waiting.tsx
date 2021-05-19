@@ -9,15 +9,14 @@ const Waiting = ({ gameId }: Props) => {
 
   const copyInput = () => {
     if (input.current == null) return;
-    console.log(input.current);
     input.current.select();
     document.execCommand('copy');
   };
 
   return (
     <div className="waiting-container">
-      <div className="wait">Waiting for other player</div>
       <div className="gameid-container">
+        <div className="wait">Waiting for other player</div>
         <h2 className="gameid">Game ID</h2>
         <h2>{gameId}</h2>
         <div className="copy-container">

@@ -1,10 +1,8 @@
 :root {
   --grid-border-color: #1f2937;
   --grid-border-size: 1px;
-
   --board-header-background-color: #4b5563;
   --board-header-color: #fff;
-
   --grid-background-color: #9ca3af;
 }
 
@@ -18,12 +16,10 @@
 
   .grid-container {
     width: 100%;
-    //background-color: green;
     display: flex;
   }
 
   .board-header {
-    //display: flex;
     background-color: var(--board-header-background-color);
     color: var(--board-header-color);
   }
@@ -75,13 +71,11 @@
       background-color: transparent;
     }
     .tile-state-hit {
-      //background-color: red;
       display: flex;
       align-items: center;
       justify-content: center;
 
       g {
-        //fill: green;
         fill: #d73502;
       }
 
@@ -125,6 +119,4 @@
   border: 1px solid tomato;
   cursor: move;
   user-select: none;
-
-  //box-shadow: 0px 0px 10px 5px gold;
 }

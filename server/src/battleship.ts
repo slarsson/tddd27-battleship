@@ -139,9 +139,6 @@ class Battleship {
           if (!ids.includes(grid[i])) return;
         }
 
-        // TODO: check
-        // this.state.boards[player][0] = msg.grid;
-
         for (let i = 0; i < this.state.boats.length; i++) {
           const id = 100 + i;
           let indices = [];

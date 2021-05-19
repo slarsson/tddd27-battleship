@@ -36,7 +36,6 @@ const Boats = () => {
               left: `${b.x}px`,
               transition: b.transition,
               position: 'absolute',
-              boxShadow: b.move ? '0px 0px 10px 5px rgba(250, 250, 250, .4)' : 'none',
               zIndex: b.move ? 9999 : 0,
             }}
           >
