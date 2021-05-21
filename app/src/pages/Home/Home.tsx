@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './home.scss';
-import battleship from '../../assets/battleship.png';
-import { Button, Input } from '../../components';
+import { Input } from '../../components';
 import { useHistory } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { currentGameState } from '../../atoms/game';
-import { GameState } from '../../../../interfaces';
 import { write } from '../../lib/storage';
 import { newGame } from '../../lib/game';
 import logo from '../../assets/logo.svg';
@@ -14,21 +12,27 @@ const API_URL = import.meta.env.VITE_API_URL as string;
 export const Home = () => {
   const [playerName, setPlayerName] = useState('');
   const [gameId, setGameId] = useState('');
-  const [createToggler, setCreateToggler] = useState(true);
-  const [joinToggler, setJoinToggler] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const setCurrentGame = useSetRecoilState(currentGameState); //TODO: läs in från localstorage för att plocka redan existerande
+  const [loading, setLoading] = useState({ create: false, join: false });
+  const setCurrentGame = useSetRecoilState(currentGameState);
+  const [error, setError] = useState({ create: '', join: '' });
   let history = useHistory();
 
-  useEffect(() => {}, [playerName, gameId]);
-
   const handleCreate = async () => {
-    setLoading(true);
-
-    // TODO: check playerName
-    if (!playerName) {
+    const re = new RegExp(/^[0-9a-zA-Z]+$/);
+    if (!re.test(playerName)) {
+      setError({ ...error, create: 'Only letters and numbers in name' });
       return;
     }
+
+    if (playerName.length > 10) {
+      setError({
+        ...error,
+        create: 'Name must be between 1 and 10 characters long',
+      });
+      return;
+    }
+
+    setLoading({ ...loading, create: true });
 
     try {
       let res = await fetch(API_URL + '/create', {
@@ -41,22 +45,18 @@ export const Home = () => {
         }),
       });
       let data = await res.json();
-      console.log(data);
-
       setCurrentGame(newGame(data.gameId, data.token));
       write(data.gameId, data.token);
-      setLoading(false);
       history.push(`/g/${data.gameId}`);
+      return;
     } catch (e) {
-      setLoading(false);
-      console.log('err...', e);
+      setError({ ...error, create: 'Network error :(' });
     }
+    setLoading({ ...loading, create: false });
   };
 
   const handleJoin = async () => {
-    // TODO: Check gameId
-    setLoading(true);
-    console.log('gameid', gameId);
+    setLoading({ ...loading, join: true });
 
     try {
       let res = await fetch(API_URL + '/available', {
@@ -69,38 +69,63 @@ export const Home = () => {
         }),
       });
 
-      if (res.status == 200) {
-        history.push(`/g/${gameId}`);
-        return;
-      } else {
-        setLoading(false);
-        alert('no game found');
+      switch (res.status) {
+        case 200:
+          history.push(`/g/${gameId}`);
+          return;
+        case 400:
+        case 404:
+          setError({ ...error, join: 'No game found with that id' });
+          break;
+        default:
+          setError({ ...error, join: 'Error occured :(' });
+          break;
       }
-      // // Game exists
-      // if (data.ok) {
-      //   setLoading(false);
-      //   history.push(
-      // } else {
-      //   setLoading(false);
-      //   alert('No game asdasd');
-      // }
     } catch (e) {
-      console.log('err...', e);
-      setLoading(false);
+      setError({ ...error, join: 'Network error :(' });
     }
+    setLoading({ ...loading, join: false });
   };
 
   return (
     <div className="container">
-      <div>
+      <div className="main-logo">
         <img src={logo} className="img" />
       </div>
 
-      <div className="button-container">
-        <form className="form">{createToggler ? <Button text={'Create Game'} setToggler={setCreateToggler} toggler={createToggler} /> : <Input setToggler={setCreateToggler} placeHolder={'Player name'} setInputValue={setPlayerName} buttonText={'Create'} loading={loading} onSubmit={handleCreate} />}</form>
-
-        <form className="form">{joinToggler ? <Button text={'Join Game'} setToggler={setJoinToggler} toggler={joinToggler} /> : <Input setToggler={setJoinToggler} placeHolder={'Game id'} setInputValue={setGameId} buttonText={'Join'} loading={loading} onSubmit={handleJoin} />}</form>
-      </div>
+      <Input
+        title={'CREATE GAME'}
+        placeHolder={'Player name'}
+        error={error.create}
+        setError={(value: string) =>
+          setError({
+            create: value,
+            join: error.join,
+          })
+        }
+        setInputValue={setPlayerName}
+        buttonText={'CREATE'}
+        loading={loading.create}
+        onSubmit={handleCreate}
+        value={playerName}
+      />
+      <Input
+        title={'JOIN GAME'}
+        placeHolder={'Game id'}
+        error={error.join}
+        setError={(value: string) =>
+          setError({
+            create: error.create,
+            join: value,
+          })
+        }
+        setInputValue={setGameId}
+        buttonText={'JOIN'}
+        loading={loading.join}
+        onSubmit={handleJoin}
+        forceUppercase={true}
+        value={gameId}
+      />
     </div>
   );
 };

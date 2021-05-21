@@ -9,7 +9,12 @@ const ws = (server: any, cb: any): WebSocket.Server => {
   cb();
 
   wss.on('connection', (ws: WebSocket, req: Request) => {
-    console.log('NEW CONNECTION:', req.connection.remoteAddress, '=>', req.headers['user-agent']);
+    console.log(
+      'NEW CONNECTION:',
+      req.connection.remoteAddress,
+      '=>',
+      req.headers['user-agent']
+    );
 
     ws.on('message', (payload: string) => {
       let msg: any;
@@ -27,6 +32,7 @@ const ws = (server: any, cb: any): WebSocket.Server => {
 
       const game = games.get(msg.gameId);
       if (game === undefined) {
+        ws.send(JSON.stringify({ type: MessageType.NotFound }));
         ws.terminate();
         return;
       }
@@ -40,11 +46,21 @@ const ws = (server: any, cb: any): WebSocket.Server => {
     });
 
     ws.on('close', (w: WebSocket) => {
-      console.log('CLOSE:', req.connection.remoteAddress, '=>', req.headers['user-agent']);
+      console.log(
+        'CLOSE:',
+        req.connection.remoteAddress,
+        '=>',
+        req.headers['user-agent']
+      );
     });
 
     ws.on('error', (w: WebSocket) => {
-      console.log('ERROR:', req.connection.remoteAddress, '=>', req.headers['user-agent']);
+      console.log(
+        'ERROR:',
+        req.connection.remoteAddress,
+        '=>',
+        req.headers['user-agent']
+      );
     });
   });
 

@@ -15,3 +15,5 @@ export interface StateUpdate extends OutgoingMessage {
   boats: number[];
   done: boolean;
 }
+
+export interface NotFound extends OutgoingMessage {}

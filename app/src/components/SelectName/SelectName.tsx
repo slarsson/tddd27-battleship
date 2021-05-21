@@ -14,19 +14,24 @@ interface Player2Props {
 
 export const SelectName = ({ activeGameId }: Player2Props) => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
   const setCurrentGame = useSetRecoilState(currentGameState);
 
   const joinPlayer = async () => {
-    setLoading(true);
-
-    // check input
-    if (!player2Name.match('^[A-Za-zåäö]+')) {
-      alert('Var vänlig se till att namnet endast består av bokstäver A-Ö.');
+    const re = new RegExp(/^[0-9a-zA-Z]+$/);
+    if (!re.test(player2Name)) {
+      setError('Only letters and numbers in name');
       return;
     }
 
-    // TODO: Check if playername already exists
+    if (player2Name.length > 10) {
+      setError('Name must be between 1 and 10 characters long');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       let res = await fetch(API_URL + '/join', {
         method: 'POST',
@@ -39,31 +44,45 @@ export const SelectName = ({ activeGameId }: Player2Props) => {
         }),
       });
 
-      if (res.status != 200) {
-        alert('TODO: FIX THIS FFS!');
-        return;
+      switch (res.status) {
+        case 200:
+          let data = await res.json();
+          setCurrentGame(newGame(activeGameId, data.token));
+          write(activeGameId, data.token);
+          return;
+        case 400:
+          setError('Only letters and numbers in name');
+          break;
+        case 404:
+          setError('No game found');
+          break;
+        case 409:
+          setError('Name already taken');
+          break;
+        default:
+          setError('Error occured :(');
+          break;
       }
-
-      let data = await res.json();
-
-      // new given token to player2
-      setCurrentGame(newGame(activeGameId, data.token));
-      write(activeGameId, data.token);
-      setLoading(false);
     } catch (err) {
-      setLoading(false);
-      console.log('err...', err);
+      setError('Network error');
     }
+    setLoading(false);
   };
 
   return (
     <div className="content">
-      <form>
-        <label htmlFor="playername-input" className="gameid">
-          Player name
-        </label>
-        <Input placeHolder={'Jon Doe'} setInputValue={setPlayer2Name} buttonText={'Join'} loading={loading} onSubmit={joinPlayer} />
-      </form>
+      <Input
+        title={'SELECT NAME'}
+        placeHolder={'Player name'}
+        error={error}
+        setError={setError}
+        setInputValue={setPlayer2Name}
+        buttonText={'JOIN'}
+        loading={loading}
+        onSubmit={joinPlayer}
+        forceUppercase={false}
+        value={player2Name}
+      />
     </div>
   );
 };

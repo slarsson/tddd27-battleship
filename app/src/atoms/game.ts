@@ -7,7 +7,6 @@ interface GameState {
   token: string;
 }
 
-/* Test */
 export interface CurrentGame {
   alive: boolean;
   gameId: string;
@@ -27,7 +26,6 @@ interface GameStates {
   [key: string]: GameState;
 }
 
-/* Test */
 export const currentGameState = atom<CurrentGame>({
   key: 'currentGame',
   default: {

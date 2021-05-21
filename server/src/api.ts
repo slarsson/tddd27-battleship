@@ -92,7 +92,7 @@ app.post('/join', (req: Request, res: Response) => {
   }
 
   if (!validateName(req.body.name)) {
-    res.status(422).json({ error: 'only a-b or 0-9 allowed in name' });
+    res.status(400).json({ error: 'only a-b or 0-9 allowed in name' });
     return;
   }
 
@@ -109,7 +109,7 @@ app.post('/join', (req: Request, res: Response) => {
 
   const tokens = game.getTokens();
   if (!game.setName(tokens.p2, req.body.name)) {
-    res.status(422).json({ error: 'name is already taken :(' });
+    res.status(409).json({ error: 'name is already taken :(' });
     return;
   }
 

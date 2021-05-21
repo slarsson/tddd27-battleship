@@ -1,54 +1,69 @@
-import React, { RefObject, useEffect, useRef } from 'react';
+import React from 'react';
 import './input.scss';
 import { Loader } from '..';
 
 interface InputProps {
-  setToggler?: (value: boolean) => void;
+  title: string;
   placeHolder: string;
+  error: string;
+  setError: (value: string) => void;
   setInputValue: (value: string) => void;
   buttonText: string;
   loading: boolean;
   onSubmit: () => void;
+  forceUppercase?: boolean;
+  value: string;
 }
 
-export const Input = ({ setToggler, placeHolder, setInputValue, buttonText, loading, onSubmit }: InputProps) => {
-  const useOutsideAlerter = (ref: any) => {
-    useEffect(() => {
-      function handleClickOutside(e: MouseEvent) {
-        if (ref.current && !ref.current.contains(e.target) && setToggler) {
-          setToggler(true);
-        }
-      }
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, [ref]);
-  };
-
-  const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef);
-
+export const Input = ({
+  title,
+  placeHolder,
+  error,
+  setError,
+  setInputValue,
+  buttonText,
+  loading,
+  onSubmit,
+  forceUppercase,
+  value,
+}: InputProps) => {
   return (
-    <div className="input-container" ref={wrapperRef}>
-      <input
-        className="input-field"
-        id="playername-input"
-        placeholder={placeHolder}
-        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-          setInputValue(e.currentTarget.value);
-        }}
-      ></input>
-      <button
-        className="submit-button"
-        type="submit"
-        onClick={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-      >
-        {loading ? <Loader loaderSize={'3px solid #1D4ED8'} /> : buttonText}
-      </button>
-    </div>
+    <form>
+      <div className="input-container">
+        <label className="input-label">{title}</label>
+        <div className="input-fields">
+          <input
+            value={value}
+            autoComplete="off"
+            className="input-field"
+            id="playername-input"
+            placeholder={placeHolder}
+            onChange={(e: React.FormEvent<HTMLInputElement>) => {
+              if (forceUppercase != null && forceUppercase) {
+                setInputValue(e.currentTarget.value.toUpperCase());
+              } else {
+                setInputValue(e.currentTarget.value);
+              }
+              setError('');
+            }}
+          ></input>
+          <button
+            className="submit-button"
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              onSubmit();
+            }}
+          >
+            {loading ? (
+              <Loader size={'20px'} color={'#fff'} borderSize={'3px'} />
+            ) : (
+              buttonText
+            )}
+          </button>
+        </div>
+        <p>{error}</p>
+      </div>
+    </form>
   );
 };
