@@ -3,7 +3,7 @@ import './gameHandler.scss';
 import { useRecoilState } from 'recoil';
 import { currentGameState } from '../../atoms/game';
 import { useParams } from 'react-router-dom';
-import { Game, NewLoader as Loader, SelectName } from '../../components';
+import { Game, Loader, SelectName } from '../../components';
 import { read } from '../../lib/storage';
 import { newGame } from '../../lib/game';
 import Header from '../../components/Header/Header';
@@ -21,7 +21,6 @@ export const GameHandler = () => {
     }
     const token = read(id);
     if (!token) {
-      setLoading(true);
       checkGame();
     } else {
       setGame(newGame(id, token));
@@ -29,6 +28,7 @@ export const GameHandler = () => {
   }, []);
 
   const checkGame = async () => {
+    setLoading(true);
     try {
       let res = await fetch(API_URL + '/available', {
         method: 'POST',
@@ -43,20 +43,21 @@ export const GameHandler = () => {
       if (res.status != 200) {
         setNotFound(true);
       }
-      setLoading(false);
     } catch (e) {
       alert('NETWORK ERROR :(');
     }
+    setLoading(false);
   };
 
   if (game.alive) return <Game />;
 
-  if (loading) return <Loader size="50px" color="#1D4ED8" borderSize="6px" center={true} />;
+  if (loading)
+    return <Loader size="50px" color="#fff" borderSize="6px" center={true} />;
 
   if (notFound) {
     return (
       <div className="not-found">
-        <h1>1337 - GAME NOT FOUND</h1>
+        <h1>GAME NOT FOUND</h1>
       </div>
     );
   }
@@ -65,7 +66,6 @@ export const GameHandler = () => {
     <div className="game-handler-container">
       <Header />
       <div className="game-handler-content">
-        <div className="select-name">Select player name</div>
         <SelectName activeGameId={id} />
       </div>
     </div>

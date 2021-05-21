@@ -2,15 +2,27 @@ import React from 'react';
 import './loader.scss';
 
 interface LoaderProps {
-  loaderSize: string;
+  size: string;
+  color: string;
+  borderSize: string;
+  center?: boolean;
 }
 
-export const Loader = ({ loaderSize }: LoaderProps) => {
+export const Loader = ({ size, color, borderSize, center }: LoaderProps) => {
+  const arc = `${borderSize} solid ${color}`;
+
   return (
-    <div>
-      <div style={{ width: '20px', height: '20px' }}>
-        <div className="loading">
-          <div className="spinner" style={{ borderLeft: loaderSize, borderBottom: loaderSize }}></div>
+    <div className={center != null && center ? 'loading-container' : ''}>
+      <div style={{ width: size, height: size }}>
+        <div className="loadingx">
+          <div
+            className="spinnerx"
+            style={{
+              borderLeft: arc,
+              borderBottom: arc,
+              borderWidth: borderSize,
+            }}
+          ></div>
         </div>
       </div>
     </div>

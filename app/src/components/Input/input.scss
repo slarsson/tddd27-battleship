@@ -1,5 +1,24 @@
 .input-container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  label {
+    font-weight: 500;
+    padding: 10px;
+    color: #fff;
+  }
+
+  p {
+    min-height: 40px;
+    font-size: 14px;
+    padding: 10px;
+    color: red;
+  }
+}
+
+.input-fields {
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -9,7 +28,7 @@
   outline: 0;
   border-radius: 5vh;
   box-shadow: 0 0.125em 0.3125em rgba(#333, 0.3);
-  background-color: #fff;
+  background-color: #ededed;
 }
 
 .input-field {
@@ -19,21 +38,35 @@
   outline: 0;
   border: 0;
   font-weight: 500;
+  font-size: 14px;
+  background-color: #ededed;
+
+  &::placeholder {
+    color: #a1a1a1;
+  }
 }
 
 .submit-button {
-  width: 80px;
-  height: 30px;
+  width: 100px;
+  height: 35px;
   border-radius: 6em;
   outline: 0;
   border: 0;
   cursor: pointer;
   font-weight: 500;
+  font-size: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: ease-in-out background-color 0.2s;
+  background-color: #6074ff;
+  color: #fff;
 
   &:hover {
-    transform: scale(1.05);
+    background-color: #614de8;
+  }
+
+  &:active {
+    background-color: #9a54ff;
   }
 }

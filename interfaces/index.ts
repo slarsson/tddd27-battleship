@@ -7,7 +7,7 @@ export enum MessageType {
 
   // outgoing
   StateUpdate = 'stateupdate',
-  Boats = 'boats',
+  NotFound = 'notfound',
 }
 
 export enum GameState {
