@@ -268,7 +268,7 @@ const Game = () => {
                   </div>
                 </div>
                 {game.view == GameState.Completed ? (
-                  <div className="game-info">GAME OVER {gameOver}</div>
+                  <div className="game-info">GAME OVER</div>
                 ) : (
                   <div className="game-info">
                     <div
