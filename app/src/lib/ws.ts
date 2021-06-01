@@ -1,4 +1,8 @@
-export const ws = (url: string, onMessage: (msg: any) => void, onError: () => void): Promise<any> => {
+export const ws = (
+  url: string,
+  onMessage: (msg: any) => void,
+  onError: () => void
+): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     let socket = new WebSocket(url);
 
@@ -25,16 +29,4 @@ export const ws = (url: string, onMessage: (msg: any) => void, onError: () => vo
       onMessage(JSON.parse(msg.data));
     };
   });
-
-  //socket.onopen =
-
-  // let socket = new WebSocket('ws://localhost:3000');
-  //         socket.onopen = () => {
-  //             socket.send(JSON.stringify({
-  //                 type: 'connect',
-  //                 gameId: currentGame.gameId,
-  //                 token: currentGame.token,
-  //             }));
-
-  //return
 };

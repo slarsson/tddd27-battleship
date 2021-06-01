@@ -1,4 +1,9 @@
-import { MessageType, TileState, GameState, StateUpdate } from '../../interfaces';
+import {
+  MessageType,
+  TileState,
+  GameState,
+  StateUpdate,
+} from '../../interfaces';
 import { defaultGrid } from './helpers';
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
@@ -38,8 +43,14 @@ class Battleship {
       boats: [2, 3, 3, 4, 5],
       boatsPlaced: [false, false],
       boards: [
-        [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
-        [defaultGrid(10, TileState.Empty), defaultGrid(10, TileState.Available)],
+        [
+          defaultGrid(10, TileState.Empty),
+          defaultGrid(10, TileState.Available),
+        ],
+        [
+          defaultGrid(10, TileState.Empty),
+          defaultGrid(10, TileState.Available),
+        ],
       ],
       positions: [new Map<number, number[]>(), new Map<number, number[]>()],
       score: [0, 0],
@@ -61,7 +72,6 @@ class Battleship {
     this.activated = true;
   }
 
-  // TODO: does this work?
   public setName(token: string, name: string): boolean {
     if (token != this.p1 && token != this.p2) return false;
 
