@@ -16,6 +16,13 @@ const ws = (server: any, cb: any): WebSocket.Server => {
       req.headers['user-agent']
     );
 
+    const keepAlive = () => {
+      ws.ping();
+      tOut = setTimeout(keepAlive, 1000);
+    };
+
+    let tOut = setTimeout(keepAlive, 1000);
+
     ws.on('message', (payload: string) => {
       let msg: any;
       try {
@@ -46,6 +53,7 @@ const ws = (server: any, cb: any): WebSocket.Server => {
     });
 
     ws.on('close', (w: WebSocket) => {
+      clearTimeout(tOut);
       console.log(
         'CLOSE:',
         req.connection.remoteAddress,
@@ -55,6 +63,7 @@ const ws = (server: any, cb: any): WebSocket.Server => {
     });
 
     ws.on('error', (w: WebSocket) => {
+      clearTimeout(tOut);
       console.log(
         'ERROR:',
         req.connection.remoteAddress,

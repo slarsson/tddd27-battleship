@@ -1,10 +1,10 @@
 # Battleship
 
-URL: http://battleship.samuel.yoga/
+DEMO: http://battleship.samuel.yoga/
 
 ## Final screencasts
 
-Group screencast: TODO
+Group screencast: https://www.youtube.com/watch?v=7LISX0x_dP0
 
 William "Hawkeye" Uddmyr (uddan123): TODO
 
