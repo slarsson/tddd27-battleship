@@ -6,7 +6,7 @@ DEMO: http://battleship.samuel.yoga/
 
 Group screencast: https://www.youtube.com/watch?v=7LISX0x_dP0
 
-William "Hawkeye" Uddmyr (uddan123): TODO
+William Uddmyr (wilud321): https://youtu.be/qG3YWmS2QF0
 
 Samuel Larsson (samla949): https://www.youtube.com/watch?v=CqpT9NBLhmI
 
