@@ -1,6 +1,9 @@
 name: Mirror to gitlab.liu.se
 
-on: push
+on:
+  push:
+    branches-ignore:
+      - '**'
 
 jobs:
   deploy:
